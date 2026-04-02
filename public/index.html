@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Perceptionism Lab</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#090807;--sf:#0f0e0c;--rs:#161412;--bd:#1e1c18;--bdL:#2a2722;--tx:#f0ead8;--txS:#a09880;--txM:#605840;--gd:#c9a84c;--gdD:rgba(201,168,76,.1);--gdB:rgba(201,168,76,.22);--rd:#c44e4e;--gn:#5cb85c;--bl:#5b8dd9;--pr:#a06cd5;--sn:'DM Sans',-apple-system,sans-serif;--mn:'DM Mono','SF Mono',monospace}
+*{margin:0;padding:0;box-sizing:border-box}body{background:var(--bg);color:var(--tx);font-family:var(--sn);-webkit-font-smoothing:antialiased}
+::-webkit-scrollbar{width:5px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:var(--bd);border-radius:3px}
+button,input,textarea,select{font-family:var(--sn)}textarea{resize:vertical}
+.top{position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--bd);padding:0 20px;display:flex;align-items:center;justify-content:space-between;height:50px;gap:10px;flex-wrap:wrap}
+.top-l{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.logo{font-family:var(--mn);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);font-weight:600}
+.sep{color:var(--bd)}.tabs{display:flex;gap:1px;background:var(--sf);border:1px solid var(--bd);border-radius:5px;overflow:hidden}
+.tab{padding:4px 13px;font-size:9px;font-weight:600;font-family:var(--mn);letter-spacing:1.5px;cursor:pointer;border:none;background:transparent;color:var(--txM);transition:all .15s}
+.tab.on{background:var(--gd);color:var(--bg)}
+.cl-tabs{display:flex;gap:3px}.cl{padding:4px 12px;border-radius:5px;font-size:10px;font-weight:600;border:1px solid var(--bd);background:transparent;color:var(--txM);cursor:pointer;font-family:var(--mn);letter-spacing:.5px;transition:all .15s}
+.cl.on{border-color:var(--gd);color:var(--gd);background:var(--gdD)}.cl.add{font-size:13px;padding:4px 8px;line-height:1}
+.mo{display:flex;align-items:center;gap:8px}.mo button{background:none;border:1px solid var(--bd);border-radius:3px;color:var(--txS);cursor:pointer;padding:3px 7px;font-size:11px}
+.mo span{font-size:12px;font-weight:600;min-width:110px;text-align:center}
+.top-r{display:flex;align-items:center;gap:5px}
+.btn{padding:5px 11px;border-radius:5px;font-size:10px;cursor:pointer;font-family:var(--mn);letter-spacing:1px;font-weight:600;border:1px solid var(--bd);background:transparent;color:var(--txS);transition:all .15s}
+.btn:hover{border-color:var(--bdL);color:var(--tx)}.btn-g{background:var(--gd);color:var(--bg);border-color:var(--gd)}.btn-gn{border-color:rgba(92,184,92,.3);color:var(--gn)}.btn-rd{border-color:rgba(196,78,78,.3);color:var(--rd)}
+.sbar{padding:7px 20px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:16px;flex-wrap:wrap;font-size:9px}.sbar b{font-size:14px;font-weight:800}
+.wk{margin-bottom:16px;background:var(--sf);border:1px solid var(--bd);border-radius:8px;overflow:hidden}
+.wk-h{padding:11px 16px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd)}
+.wk-h-l{display:flex;align-items:center;gap:10px;flex:1}.wk-n{font-size:13px;font-weight:800;color:var(--gd);font-family:var(--mn)}
+.wk-t{font-size:10px;font-weight:700;letter-spacing:1px;text-transform:uppercase}.wk-s{font-size:9px;color:var(--txM);margin-top:1px}
+.wk-eb{background:none;border:none;color:var(--txM);cursor:pointer;font-size:10px;padding:2px 5px}.wk-g{padding:10px;display:flex;gap:8px;flex-wrap:wrap}
+.rc{background:var(--rs);border:1px solid var(--bd);border-radius:6px;padding:11px 13px;cursor:pointer;flex:1 1 0;min-width:195px;max-width:290px;transition:all .2s;position:relative;overflow:hidden}
+.rc:hover{border-color:var(--bdL)}.rc.rec{opacity:.3}.rc.rec:hover{opacity:.5}.rc.out{border-color:var(--gd);box-shadow:0 0 12px rgba(201,168,76,.08)}
+.rc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:5px;gap:8px}.rc-left{flex:1;min-width:0}
+.rc-date{font-size:8px;color:var(--txM);font-family:var(--mn);letter-spacing:1px;text-transform:uppercase;margin-bottom:2px}
+.rc-hook{font-size:12px;font-weight:700;line-height:1.3;min-height:30px}.rc-hook.mt{color:var(--txM);font-style:italic;font-weight:400}
+.rc-right{display:flex;flex-direction:column;align-items:flex-end;gap:3px;flex-shrink:0}
+.badge{display:inline-block;padding:2px 6px;border-radius:3px;font-size:7px;font-weight:700;letter-spacing:.8px;color:#fff;font-family:var(--mn);white-space:nowrap}
+.tdot{display:inline-flex;align-items:center;gap:3px;font-size:8px;color:var(--txS);font-family:var(--mn)}.tdot i{width:5px;height:5px;border-radius:50%;display:inline-block}
+.rc-tags{display:flex;gap:3px;flex-wrap:wrap;align-items:center;margin-bottom:4px}
+.tg{padding:1px 5px;border-radius:2px;font-size:7px;font-weight:600;font-family:var(--mn);letter-spacing:.4px}.tg-g{color:var(--gd);background:var(--gdD)}.tg-star{color:var(--gd);font-size:8px}
+.rc-icons{display:flex;gap:3px;align-items:center}
+.drv{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:3px;background:rgba(92,184,92,.1);border:1px solid rgba(92,184,92,.15);cursor:pointer;text-decoration:none}.drv svg{width:9px;height:9px}
+.rtg{display:inline-flex;align-items:center;justify-content:center;width:18px;height:18px;border-radius:3px;cursor:pointer;border:1px solid var(--bd);background:transparent}.rtg.on{background:var(--gdD);border-color:var(--gdB)}.rtg svg{width:9px;height:9px}
+.rc-perf{display:flex;gap:6px;margin-top:5px;padding-top:5px;border-top:1px solid var(--bd)}.rc-pv{font-size:9px;font-weight:700;font-family:var(--mn)}.rc-pl{font-size:6px;color:var(--txM);font-family:var(--mn);letter-spacing:.8px;text-transform:uppercase}
+.addc{flex:1 1 0;min-width:195px;max-width:290px;min-height:90px;border:1px dashed var(--bd);border-radius:6px;display:flex;align-items:center;justify-content:center;cursor:pointer;flex-direction:column;gap:2px;transition:border-color .2s}.addc:hover{border-color:var(--txM)}
+.ov{position:fixed;inset:0;z-index:2000;background:rgba(0,0,0,.85);backdrop-filter:blur(4px);display:flex;justify-content:center;padding:12px;overflow-y:auto}
+.mdl{background:var(--sf);border:1px solid var(--bd);border-radius:10px;width:100%;max-width:580px;margin:auto;overflow:hidden}.mdl-s{max-width:400px}
+.mh{padding:14px 20px;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.mx{background:none;border:none;color:var(--txM);font-size:16px;cursor:pointer;line-height:1}
+.mb{padding:16px 20px;display:flex;flex-direction:column;gap:14px;max-height:78vh;overflow-y:auto}
+.mf{padding:12px 20px;border-top:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center;position:sticky;bottom:0;background:var(--sf)}
+.fl{font-family:var(--mn);font-size:8px;letter-spacing:1.8px;text-transform:uppercase;color:var(--txM);margin-bottom:4px;display:block;font-weight:500}
+.fi{width:100%;padding:7px 10px;background:var(--bg);border:1px solid var(--bd);border-radius:4px;color:var(--tx);font-size:12px;outline:none}.fi:focus{border-color:var(--bdL)}.fi.hk{font-size:14px;font-weight:700;padding:10px 12px}.fi.ta{min-height:70px;line-height:1.7}.fi.ta-s{min-height:36px}
+.fr{display:grid;grid-template-columns:1fr 1fr;gap:8px}.fr4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:8px}
+.sec{font-family:var(--mn);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--gd);font-weight:600;margin-top:4px;padding-top:10px;border-top:1px solid var(--bd)}
+.pg{display:flex;gap:3px;flex-wrap:wrap}.pl{padding:3px 7px;border-radius:3px;font-size:8px;font-weight:700;letter-spacing:.5px;cursor:pointer;font-family:var(--mn);border:1px solid var(--bd);background:transparent;color:var(--txM);transition:all .12s;display:inline-flex;align-items:center;gap:3px}.pl.on{color:#fff}
+.cfm{position:fixed;inset:0;z-index:3000;background:rgba(0,0,0,.9);display:flex;align-items:center;justify-content:center}.cfm-b{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:22px 26px;max-width:320px;text-align:center}.cfm-b p{font-size:12px;color:var(--txS);margin-bottom:14px}
+.toast{position:fixed;bottom:16px;left:50%;transform:translateX(-50%);background:var(--gd);color:var(--bg);padding:7px 16px;border-radius:5px;font-size:11px;font-weight:700;z-index:4000;font-family:var(--mn);animation:fu .3s}
+@keyframes fu{from{opacity:0;transform:translateX(-50%) translateY(8px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}
+.dsh{padding:16px 20px;max-width:1060px;margin:0 auto;display:flex;flex-direction:column;gap:12px}
+.card{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:16px 20px}.card-t{font-family:var(--mn);font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--txM);margin-bottom:12px;font-weight:500}
+.og{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:10px}
+.oi{background:var(--bg);border:1px solid var(--bd);border-radius:5px;padding:10px;text-align:center}.oi-v{font-size:20px;font-weight:800;line-height:1;margin-bottom:2px}.oi-l{font-size:7px;font-family:var(--mn);letter-spacing:1.5px;text-transform:uppercase;color:var(--txM)}.oi-d{font-size:8px;font-family:var(--mn);margin-top:3px;font-weight:600}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tbl{width:100%;border-collapse:collapse}.tbl th{text-align:left;font-size:7px;font-family:var(--mn);letter-spacing:1.5px;text-transform:uppercase;color:var(--txM);padding:6px 7px;border-bottom:1px solid var(--bd)}.tbl th.r{text-align:right}
+.tbl td{font-size:10px;padding:7px;border-bottom:1px solid var(--bd);color:var(--txS)}.tbl tr:last-child td{border-bottom:none}.tbl td.hk{color:var(--tx);font-weight:600;max-width:180px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tbl td.r{text-align:right;font-family:var(--mn);font-size:9px}.tbl td.hi{color:var(--gd);font-weight:700}
+.tr-row{display:flex;align-items:center;gap:7px;padding:5px 0}.tr-dot{width:6px;height:6px;border-radius:2px;flex-shrink:0}.tr-nm{font-size:10px;color:var(--txS);flex:1}.tr-v{font-family:var(--mn);font-size:11px;font-weight:700;color:var(--gd);min-width:24px;text-align:right}.tr-bar{width:80px;height:5px;background:var(--bg);border-radius:3px;overflow:hidden}.tr-bf{height:100%;border-radius:3px}.tr-ct{font-family:var(--mn);font-size:7px;color:var(--txM);min-width:28px}
+.bars{display:flex;gap:8px;align-items:flex-end;height:100px}.bar-c{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;height:100%}.bar-v{font-size:8px;font-weight:700;font-family:var(--mn)}.bar-w{flex:1;display:flex;align-items:flex-end;width:100%}.bar-f{width:100%;border-radius:3px 3px 0 0;min-height:2px}.bar-l{font-size:6px;color:var(--txM);font-family:var(--mn);text-align:center;line-height:1.1}
+.out-card{background:var(--gdD);border:1px solid var(--gdB);border-radius:5px;padding:10px 12px;margin-bottom:5px}.out-hook{font-size:11px;font-weight:700;margin-bottom:3px}.out-meta{font-size:8px;color:var(--txM);font-family:var(--mn)}.out-why{font-size:9px;color:var(--gd);margin-top:3px}
+.goals-panel{background:var(--sf);border:1px solid var(--bd);border-radius:8px;padding:14px 18px}
+.goals-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}.goals-title{font-family:var(--mn);font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--txM);font-weight:500;display:flex;align-items:center;gap:6px}.goals-title i{width:6px;height:6px;border-radius:50%;background:var(--gn);display:inline-block}
+.goals-edit{background:none;border:none;color:var(--txM);cursor:pointer;font-size:9px;font-family:var(--mn);letter-spacing:1px}.goals-edit:hover{color:var(--gd)}
+.goal-row{display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid var(--bd)}.goal-row:last-child{border-bottom:none}
+.goal-label{font-size:10px;color:var(--txS);flex:0 0 140px;display:flex;align-items:center;gap:5px}.goal-label svg{width:10px;height:10px;flex-shrink:0;opacity:.5}
+.goal-bar-wrap{flex:1;height:5px;background:var(--bg);border-radius:3px;overflow:hidden;min-width:60px}.goal-bar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.goal-vals{font-family:var(--mn);font-size:10px;color:var(--txS);white-space:nowrap}.goal-vals b{color:var(--tx);font-weight:700}
+.goal-override{width:52px;padding:3px 5px;background:var(--bg);border:1px solid var(--bd);border-radius:3px;color:var(--gd);font-size:10px;font-family:var(--mn);font-weight:700;text-align:right;outline:none}.goal-override:focus{border-color:var(--gd)}
+.trk-list{display:flex;flex-direction:column;gap:4px;margin-top:4px}.trk-item{display:flex;align-items:center;gap:6px;padding:6px 8px;background:var(--bg);border:1px solid var(--bd);border-radius:4px}
+.trk-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0;cursor:pointer;position:relative}.trk-nm{flex:1;font-size:11px;color:var(--tx);background:none;border:none;font-family:var(--sn);outline:none}.trk-nm:focus{color:var(--gd)}
+.trk-rm{background:none;border:none;color:var(--txM);cursor:pointer;font-size:11px;padding:0 3px;line-height:1}.trk-rm:hover{color:var(--rd)}
+.trk-add{width:100%;padding:6px;border:1px dashed var(--bd);border-radius:4px;background:none;color:var(--txM);font-size:9px;cursor:pointer;font-family:var(--mn);letter-spacing:1px;margin-top:2px}.trk-add:hover{border-color:var(--txS);color:var(--txS)}
+.trk-colors{position:absolute;top:14px;left:0;background:var(--sf);border:1px solid var(--bd);border-radius:4px;padding:4px;display:flex;gap:3px;z-index:10;box-shadow:0 4px 12px rgba(0,0,0,.5)}.trk-cp{width:14px;height:14px;border-radius:3px;cursor:pointer;border:1px solid transparent}.trk-cp:hover{border-color:var(--tx)}
+
+/* Login */
+.login-wrap{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+.login-box{background:var(--sf);border:1px solid var(--bd);border-radius:10px;padding:40px 36px;max-width:360px;width:100%;text-align:center}
+.login-box h1{font-family:var(--mn);font-size:10px;letter-spacing:3px;text-transform:uppercase;color:var(--gd);margin-bottom:24px}
+.login-box .fi{margin-bottom:10px;text-align:center}
+.login-box .btn-g{width:100%;padding:10px;font-size:11px;margin-top:4px}
+.login-err{color:var(--rd);font-size:10px;margin-top:8px;font-family:var(--mn)}
+
+@media(max-width:768px){.top{height:auto;padding:8px 12px}.dsh{padding:10px}.row2{grid-template-columns:1fr}.rc,.addc{min-width:100%;max-width:100%}.fr,.fr4{grid-template-columns:1fr}.og{grid-template-columns:1fr 1fr}.goal-label{flex:0 0 100px;font-size:9px}}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel">
+const{useState,useEffect,useCallback}=React;
+
+// ═══ API HELPERS ═══
+const api=async(url,opts={})=>{const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok){const e=await r.json().catch(()=>({error:'Request failed'}));throw new Error(e.error||'Request failed')}return r.json()};
+const get=url=>api(url);
+const put=(url,body)=>api(url,{method:'PUT',body:JSON.stringify(body)});
+const post=(url,body)=>api(url,{method:'POST',body:JSON.stringify(body)});
+const del=url=>api(url,{method:'DELETE'});
+
+// ═══ PLATFORM CONFIG ═══
+const P={
+  instagram:{id:"instagram",label:"INSTA",fl:"SHORT-FORM REELS",il:"Reel",
+    fmts:[{id:"talking-head",l:"TALKING HEAD",c:"#c44e4e"},{id:"walk-talk",l:"WALK & TALK",c:"#5cb85c"},{id:"voiceover",l:"VOICEOVER",c:"#c9a84c"},{id:"text-screen",l:"TEXT-ON-SCREEN",c:"#5b8dd9"}],
+    perfFields:["plays","reach","avgWatch","likes","comments","shares","saves","dms"],
+    perfLabels:{plays:"Plays",reach:"Reach",avgWatch:"Avg Watch (s)",likes:"Likes",comments:"Comments",shares:"Shares",saves:"Saves",dms:"DMs"},
+    cardPerf:["plays","saves","shares","comments"],mainK:"plays"
+  },
+  youtube:{id:"youtube",label:"YT",fl:"LONG-FORM VIDEO",il:"Video",
+    fmts:[{id:"breakdown",l:"BREAKDOWN",c:"#c44e4e"},{id:"tutorial",l:"TUTORIAL",c:"#5cb85c"},{id:"talking-head",l:"TALKING HEAD",c:"#c9a84c"},{id:"documentary",l:"DOCUMENTARY",c:"#5b8dd9"},{id:"vlog",l:"VLOG",c:"#a06cd5"}],
+    perfFields:["views","watchTimeMins","avgViewDuration","ctr","likes","comments","saves","dms"],
+    perfLabels:{views:"Views",watchTimeMins:"Watch Time (mins)",avgViewDuration:"Avg View Duration (mins)",ctr:"CTR %",likes:"Likes",comments:"Comments",saves:"Saves",dms:"DMs"},
+    cardPerf:["views","saves","shares","comments"],mainK:"views"
+  }
+};
+const TCLRS=["#5b8dd9","#c9a84c","#5cb85c","#c44e4e","#a06cd5","#e07c4f","#4ecdc4","#ff6b9d","#95e1d3","#f38181"];
+const FN=["TOF","MOF","BOF"];const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
+function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,6)}
+function fmt(n){if(n==null||isNaN(n))return"—";if(n>=1e6)return(n/1e6).toFixed(1)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return String(Math.round(n*10)/10)}
+function pctDt(c,p){if(!p||!c)return null;return Math.round((c-p)/p*100)}
+function mkk(y,m){return`${y}-${String(m+1).padStart(2,'0')}`}
+function dw(p){return p==="youtube"?[{id:uid(),title:"FOUNDATION",sub:"Core belief disruption.",reels:[]},{id:uid(),title:"PROOF",sub:"Show the methodology.",reels:[]},{id:uid(),title:"DEPTH",sub:"Full breakdowns.",reels:[]},{id:uid(),title:"CONVERSION",sub:"Bridge to offer.",reels:[]}]:[{id:uid(),title:"ENTRY",sub:"Disrupt the volume belief.",reels:[]},{id:uid(),title:"AUTHORITY BUILD",sub:"Engineering vs. growth.",reels:[]},{id:uid(),title:"DEPTH",sub:"Upstream diagnosis.",reels:[]},{id:uid(),title:"CATEGORY PILLAR",sub:"Category claim lands.",reels:[]}]}
+const DG=p=>p==="youtube"?[{id:"g1",label:"Monthly Views",target:20000,icon:"eye",auto:true},{id:"g2",label:"Total Saves",target:300,icon:"save",auto:true},{id:"g3",label:"Published This Month",target:16,icon:"upload",auto:true},{id:"g4",label:"Monthly DMs",target:50,icon:"msg",auto:false,manual:0},{id:"g5",label:"Watch Time (hrs)",target:500,icon:"clock",auto:true},{id:"g6",label:"Outlier Videos",target:2,icon:"star",auto:true}]:[{id:"g1",label:"Monthly Plays",target:50000,icon:"eye",auto:true},{id:"g2",label:"Total Saves",target:500,icon:"save",auto:true},{id:"g3",label:"Published This Month",target:28,icon:"upload",auto:true},{id:"g4",label:"Monthly DMs",target:100,icon:"msg",auto:false,manual:0},{id:"g5",label:"Engagement Rate",target:7,icon:"pct",auto:true},{id:"g6",label:"Viral Reels (100K+)",target:3,icon:"star",auto:true}];
+function nr(p){const pl=P[p];const pf={};pl.perfFields.forEach(f=>pf[f]=null);return{id:uid(),date:"",format:pl.fmts[0].id,track:"t1",funnel:"TOF",hook:"",direction:"",caption:"",notes:"",status:"pending",recorded:false,driveLink:"",...pf}}
+function dupeR(r){const d={...r,id:uid(),status:"pending",recorded:false};P.instagram.perfFields.concat(P.youtube.perfFields).forEach(f=>d[f]=null);return d}
+
+const DrvI=()=><svg viewBox="0 0 24 24" fill="none" stroke="#5cb85c" strokeWidth="2"><path d="M9 3l-7 12h6l7-12H9z"/><path d="M15 3l7 12h-6"/><path d="M2 15h20l-3 5H5l-3-5z"/></svg>;
+const RecI=({on})=><svg viewBox="0 0 24 24" fill={on?"var(--gd)":"none"} stroke={on?"var(--gd)":"var(--txM)"} strokeWidth="2"><circle cx="12" cy="12" r="6"/></svg>;
+const GI={eye:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>,user:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>,upload:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 10V2m0 0L5 5m3-3l3 3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>,msg:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 3h12v8H5l-3 3V3z"/></svg>,star:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5L8 1z"/></svg>,pct:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="11" r="2"/><path d="M13 3L3 13"/></svg>,clock:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>,save:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 1h10l2 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z"/><path d="M5 1v4h6V1"/><path d="M5 11h6"/></svg>};
+
+// ═══ LOGIN SCREEN ═══
+function Login({onAuth}){
+  const[mode,setMode]=useState('admin');
+  const[val,setVal]=useState('');
+  const[err,setErr]=useState('');
+  const[loading,setLoading]=useState(false);
+  // Check if we're on a client URL
+  const isClientUrl=window.location.pathname.startsWith('/c/');
+
+  async function submit(){
+    setErr('');setLoading(true);
+    try{
+      if(isClientUrl||mode==='client'){
+        const r=await post('/api/client/login',{token:val});
+        onAuth({role:'client',...r.client});
+      }else{
+        await post('/api/admin/login',{password:val});
+        onAuth({role:'admin'});
+      }
+    }catch(e){setErr(e.message)}
+    setLoading(false);
+  }
+
+  return<div className="login-wrap"><div className="login-box">
+    <h1>Perceptionism Lab</h1>
+    {!isClientUrl&&<div className="tabs" style={{marginBottom:16,justifyContent:'center'}}>
+      <button className={`tab${mode==='admin'?' on':''}`} onClick={()=>setMode('admin')}>ADMIN</button>
+      <button className={`tab${mode==='client'?' on':''}`} onClick={()=>setMode('client')}>CLIENT</button>
+    </div>}
+    <input className="fi" type={mode==='admin'&&!isClientUrl?'password':'text'} placeholder={isClientUrl||mode==='client'?'Access code':'Admin password'} value={val} onChange={e=>setVal(e.target.value)} onKeyDown={e=>e.key==='Enter'&&submit()}/>
+    <button className="btn btn-g" onClick={submit} disabled={loading}>{loading?'...':'ENTER'}</button>
+    {err&&<div className="login-err">{err}</div>}
+  </div></div>;
+}
+
+// ═══ REEL CARD ═══
+function RC({reel:r,tracks:tks,platId:pid,onClick,onTR,isOut}){
+  const pl=P[pid],f=pl.fmts.find(x=>x.id===r.format)||pl.fmts[0],t=tks.find(x=>x.id===r.track)||tks[0];
+  const hasP=r[pl.mainK]!=null;
+  return<div className={`rc${r.recorded?' rec':''}${isOut?' out':''}`} onClick={onClick}>
+    <div className="rc-top"><div className="rc-left">{r.date&&<div className="rc-date">{r.date}</div>}<div className={`rc-hook${r.hook?'':' mt'}`}>{r.hook||"No hook yet..."}</div></div>
+      <div className="rc-right"><span className="badge" style={{background:f.c}}>{f.l}</span><span className="tdot"><i style={{background:t?.c}}/>{t?.l}</span>{isOut&&<span className="tg-star">⭐</span>}</div></div>
+    <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
+      <div className="rc-tags"><span className="tg tg-g">{r.funnel}</span>{r.status==="approved"&&<span className="tg" style={{color:'var(--gn)',background:'rgba(92,184,92,.1)'}}>✓</span>}</div>
+      <div className="rc-icons">{r.driveLink&&<a href={r.driveLink} target="_blank" rel="noopener" className="drv" onClick={e=>e.stopPropagation()}><DrvI/></a>}<button className={`rtg${r.recorded?' on':''}`} onClick={e=>{e.stopPropagation();onTR(r.id)}}><RecI on={r.recorded}/></button></div></div>
+    {hasP&&<div className="rc-perf">{pl.cardPerf.map(k=><div key={k} style={{textAlign:'center',flex:1}}><div className="rc-pv" style={{color:k==='saves'?'var(--gd)':k==='shares'?'var(--gn)':'var(--tx)'}}>{fmt(r[k])}</div><div className="rc-pl">{pl.perfLabels[k]?.split(' ')[0]||k}</div></div>)}</div>}
+  </div>;
+}
+
+// ═══ REEL MODAL ═══
+function RM({reel:r,tracks:tks,platId:pid,onSave,onClose,onDel,onAppr,onDupe,isAdmin}){
+  const[d,sD]=useState({...r});const[cDel,sCDel]=useState(false);const pl=P[pid];
+  const u=(k,v)=>sD(p=>({...p,[k]:v}));
+  const canEditContent=isAdmin; // clients can't edit hooks/captions
+  return<div className="ov" onClick={onClose}><div className="mdl" onClick={e=>e.stopPropagation()}>
+    <div className="mh"><span style={{fontSize:14,fontWeight:700}}>{pl.il} {d.date?`— ${d.date}`:''}</span><button className="mx" onClick={onClose}>✕</button></div>
+    <div className="mb">
+      {canEditContent?<>
+        <div><label className="fl">Date</label><input className="fi" placeholder="e.g. Mon Mar 4" value={d.date} onChange={e=>u("date",e.target.value)}/></div>
+        <div><label className="fl">Hook / Title</label><input className="fi hk" placeholder="The hook..." value={d.hook} onChange={e=>u("hook",e.target.value)}/></div>
+        <div className="fr">
+          <div><label className="fl">Format</label><div className="pg">{pl.fmts.map(f=><span key={f.id} className={`pl${d.format===f.id?' on':''}`} style={d.format===f.id?{background:f.c,borderColor:f.c}:{}} onClick={()=>u("format",f.id)}>{f.l}</span>)}</div></div>
+          <div><label className="fl">Track</label><div className="pg">{tks.map(t=><span key={t.id} className={`pl${d.track===t.id?' on':''}`} style={d.track===t.id?{color:t.c,background:t.c+'18',borderColor:t.c+'44'}:{}} onClick={()=>u("track",t.id)}><i style={{width:4,height:4,borderRadius:'50%',background:t.c,display:'inline-block'}}/>{t.l}</span>)}</div></div>
+        </div>
+        <div><label className="fl">Funnel Stage</label><div className="pg">{FN.map(f=><span key={f} className={`pl${d.funnel===f?' on':''}`} style={d.funnel===f?{background:'var(--gd)',borderColor:'var(--gd)',color:'var(--bg)'}:{}} onClick={()=>u("funnel",f)}>{f}</span>)}</div></div>
+        <div><label className="fl">Direction / Notes for Editor</label><textarea className="fi ta" value={d.direction} onChange={e=>u("direction",e.target.value)}/></div>
+        <div><label className="fl">Caption & CTA</label><textarea className="fi ta-s" value={d.caption} onChange={e=>u("caption",e.target.value)}/></div>
+      </>:<>
+        <div style={{padding:'8px 0'}}><div className="fl">Hook</div><div style={{fontSize:14,fontWeight:700}}>{d.hook||'—'}</div></div>
+        {d.direction&&<div><div className="fl">Direction</div><div style={{fontSize:11,color:'var(--txS)',lineHeight:1.6}}>{d.direction}</div></div>}
+        {d.caption&&<div><div className="fl">Caption</div><div style={{fontSize:11,color:'var(--txS)',lineHeight:1.6}}>{d.caption}</div></div>}
+      </>}
+      <div><label className="fl">Google Drive Link</label><div style={{display:'flex',gap:4}}><input className="fi" style={{flex:1,fontSize:10}} placeholder="https://drive.google.com/..." value={d.driveLink} onChange={e=>u("driveLink",e.target.value)}/>{d.driveLink&&<a href={d.driveLink} target="_blank" className="drv" style={{width:28,height:28,flexShrink:0}}><DrvI/></a>}</div></div>
+      <div style={{display:'flex',alignItems:'center',gap:7,padding:'6px 0',borderTop:'1px solid var(--bd)'}}><button className={`rtg${d.recorded?' on':''}`} style={{width:24,height:24}} onClick={()=>u("recorded",!d.recorded)}><RecI on={d.recorded}/></button><span style={{fontSize:10,color:d.recorded?'var(--gd)':'var(--txM)'}}>{d.recorded?"Recorded":"Not recorded"}</span></div>
+      {isAdmin&&<div><label className="fl">Internal Notes</label><textarea className="fi ta-s" style={{color:'var(--txS)'}} value={d.notes} onChange={e=>u("notes",e.target.value)}/></div>}
+      <div className="sec">Performance Analytics</div>
+      <div className="fr4">{pl.perfFields.slice(0,4).map(k=><div key={k}><label className="fl">{pl.perfLabels[k]}</label><input className="fi" type="number" step="any" value={d[k]??""}onChange={e=>u(k,e.target.value?+e.target.value:null)}/></div>)}</div>
+      <div className="fr4">{pl.perfFields.slice(4).map(k=><div key={k}><label className="fl">{pl.perfLabels[k]}</label><input className="fi" type="number" step="any" value={d[k]??""}onChange={e=>u(k,e.target.value?+e.target.value:null)}/></div>)}</div>
+      {pid==="instagram"&&d.reach>0&&<div style={{fontSize:10,color:'var(--txM)',fontFamily:'var(--mn)'}}>Eng Rate: {(((d.likes||0)+(d.comments||0)+(d.shares||0)+(d.saves||0))/d.reach*100).toFixed(1)}% · Save Rate: {((d.saves||0)/d.reach*100).toFixed(2)}%</div>}
+      <div style={{fontSize:8,color:'var(--txM)',fontFamily:'var(--mn)',fontStyle:'italic'}}>DMs: log only if directly attributable to this reel</div>
+    </div>
+    <div className="mf"><div style={{display:'flex',gap:4}}><button className="btn btn-gn" onClick={()=>onAppr({...d,status:d.status==='approved'?'pending':'approved'})}>✓</button><button className="btn btn-g" onClick={()=>onSave(d)}>SAVE</button>{isAdmin&&<button className="btn" onClick={()=>onDupe(d)} title="Duplicate">⧉</button>}</div><div style={{display:'flex',gap:4}}>{isAdmin&&<button className="btn btn-rd" onClick={()=>sCDel(true)}>DEL</button>}<button className="btn" onClick={onClose}>✕</button></div></div>
+  </div>{cDel&&<div className="cfm" onClick={()=>sCDel(false)}><div className="cfm-b" onClick={e=>e.stopPropagation()}><p>Delete this {pl.il.toLowerCase()}?</p><div style={{display:'flex',gap:5,justifyContent:'center'}}><button className="btn" onClick={()=>sCDel(false)}>Cancel</button><button className="btn btn-rd" onClick={()=>onDel(d.id)}>Delete</button></div></div></div>}</div>;
+}
+
+// ═══ MAIN APP ═══
+function MainApp({auth}){
+  const isAdmin=auth.role==='admin';
+  const[view,setView]=useState("calendar");
+  const[plat,setPlat]=useState("instagram");
+  const[yr,setYr]=useState(()=>new Date().getFullYear());
+  const[mo,setMo]=useState(()=>new Date().getMonth());
+  const[eM,sEM]=useState(null);const[wE,sWE]=useState(null);const[sO,sSO]=useState(false);const[cM,sCM]=useState(false);
+  const[toast,sT]=useState("");const[clN,sClN]=useState("");
+  const[trkEdit,sTrkEdit]=useState(null);
+  const[wkT,setWkT]=useState("");const[wkS,setWkS]=useState("");
+  // Data
+  const[cls,setCls]=useState([]);
+  const[aC,setAC]=useState(auth.clientId||'');
+  const[tks,setTks]=useState([]);
+  const[weeks,setWeeks]=useState([]);
+  const[goals,setGoals]=useState([]);
+  const[prevWeeks,setPrevWeeks]=useState([]);
+  const[slk,setSlk]=useState('');
+  const[loading,setLoading]=useState(true);
+
+  function tst(m){sT(m);setTimeout(()=>sT(""),2e3)}
+  const pl=P[plat];const mainK=pl.mainK;const mK=mkk(yr,mo);
+  const pMK=mo===0?mkk(yr-1,11):mkk(yr,mo-1);
+
+  // Load initial data
+  useEffect(()=>{
+    (async()=>{
+      try{
+        const tracks=await get('/api/tracks');
+        setTks(tracks);
+        if(isAdmin){
+          const clients=await get('/api/clients');
+          setCls(clients);
+          if(clients.length&&!aC)setAC(clients[0].id);
+          const settings=await get('/api/settings');
+          setSlk(settings.slk||'');
+        }else{
+          setCls([{id:auth.clientId,name:auth.clientName,color:auth.clientColor}]);
+          setAC(auth.clientId);
+        }
+      }catch(e){console.error(e)}
+      setLoading(false);
+    })();
+  },[]);
+
+  // Load month data when client/platform/month changes
+  useEffect(()=>{
+    if(!aC)return;
+    (async()=>{
+      try{
+        const d=await get(`/api/data/${aC}/${plat}/${mK}`);
+        setWeeks(d.weeks||dw(plat));
+        setGoals(d.goals||DG(plat));
+        const p=await get(`/api/data/${aC}/${plat}/${pMK}`);
+        setPrevWeeks(p.weeks||[]);
+      }catch(e){console.error(e)}
+    })();
+    sEM(null);
+  },[aC,plat,mK]);
+
+  // Save helper
+  async function saveData(newWeeks,newGoals){
+    const body={};
+    if(newWeeks!==undefined){body.weeks=newWeeks;setWeeks(newWeeks)}
+    if(newGoals!==undefined){body.goals=newGoals;setGoals(newGoals)}
+    try{await put(`/api/data/${aC}/${plat}/${mK}`,body)}catch(e){tst("Save failed")}
+  }
+
+  const allR=weeks.flatMap(w=>w.reels);
+  const perfR=allR.filter(r=>r[mainK]!=null);
+  const avgSaves=perfR.length?perfR.reduce((s,r)=>s+(r.saves||0),0)/perfR.length:0;
+  const avgShares=perfR.length?perfR.reduce((s,r)=>s+(r.shares||0),0)/perfR.length:0;
+  const avgMain=perfR.length?perfR.reduce((s,r)=>s+(r[mainK]||0),0)/perfR.length:0;
+  function isOut(r){if(!r[mainK])return false;return(r.saves>avgSaves*1.5)||(r.shares>avgShares*1.5)||(r[mainK]>avgMain*1.5)}
+  function outWhy(r){if(r.saves>avgSaves*1.5)return"High saves — belief shifted. Build a deeper version.";if(r.shares>avgShares*1.5)return"High shares — people distributing your frame. Double down.";if(r[mainK]>avgMain*1.5)return"Hook pulled cold traffic. Test this structure on next 3.";return""}
+  const outliers=perfR.filter(isOut);
+
+  const pPerf=prevWeeks.flatMap(w=>w.reels).filter(r=>r[mainK]!=null);
+  const pMain=pPerf.reduce((s,r)=>s+(r[mainK]||0),0);const pSaves=pPerf.reduce((s,r)=>s+(r.saves||0),0);const pShares=pPerf.reduce((s,r)=>s+(r.shares||0),0);
+  const cMain=perfR.reduce((s,r)=>s+(r[mainK]||0),0);const cSaves=perfR.reduce((s,r)=>s+(r.saves||0),0);const cShares=perfR.reduce((s,r)=>s+(r.shares||0),0);
+  const Delta=({c,p})=>{const d=pctDt(c,p);if(d==null)return null;return<div className="oi-d" style={{color:d>=0?'var(--gn)':'var(--rd)'}}>{d>=0?'↑':'↓'}{Math.abs(d)}%</div>};
+
+  function uW(nw){saveData(nw,undefined)}
+  function addR(wi){const nw=[...weeks];nw[wi]={...nw[wi],reels:[...nw[wi].reels,nr(plat)]};uW(nw);sEM({wi,ri:nw[wi].reels.length-1})}
+  function saveR(upd){if(!eM)return;const nw=[...weeks];nw[eM.wi]={...nw[eM.wi],reels:[...nw[eM.wi].reels]};nw[eM.wi].reels[eM.ri]=upd;uW(nw);tst("Saved");sEM(null)}
+  function apprR(u){saveR(u)}
+  function delR(rid){if(!eM)return;const nw=[...weeks];nw[eM.wi]={...nw[eM.wi],reels:nw[eM.wi].reels.filter(r=>r.id!==rid)};uW(nw);sEM(null);tst("Deleted")}
+  function dupeReelFn(d){if(!eM)return;const dup=dupeR(d);const nw=[...weeks];const rs=[...nw[eM.wi].reels];rs.splice(eM.ri+1,0,dup);nw[eM.wi]={...nw[eM.wi],reels:rs};uW(nw);sEM({wi:eM.wi,ri:eM.ri+1});tst("Duplicated")}
+  function togR(rid){uW(weeks.map(w=>({...w,reels:w.reels.map(r=>r.id===rid?{...r,recorded:!r.recorded}:r)})))}
+  function apprAll(){uW(weeks.map(w=>({...w,reels:w.reels.map(r=>({...r,status:"approved"}))})));tst("All approved")}
+  function addW(){uW([...weeks,{id:uid(),title:"NEW WEEK",sub:"",reels:[]}]);tst("Added")}
+  function rmW(wi){if(weeks.length<=1)return;if(!confirm(`Remove Week ${wi+1}?`))return;uW(weeks.filter((_,i)=>i!==wi))}
+  function saveWk(){const nw=[...weeks];nw[wE]={...nw[wE],title:wkT,sub:wkS};uW(nw);sWE(null);tst("Updated")}
+  async function addCl(){
+    if(!clN.trim())return;
+    try{const c=await post('/api/clients',{name:clN.trim(),color:TCLRS[cls.length%TCLRS.length]});setCls(pr=>[...pr,c]);setAC(c.id);sClN("");sCM(false);tst(c.name+" added — token: "+c.token)}catch(e){tst(e.message)}
+  }
+  async function rmCl(cid){
+    if(cls.length<=1)return;if(!confirm(`Remove "${cls.find(c=>c.id===cid)?.name}"?`))return;
+    try{await del(`/api/clients/${cid}`);setCls(pr=>pr.filter(c=>c.id!==cid));if(aC===cid)setAC(cls.find(c=>c.id!==cid)?.id||'');tst("Removed")}catch(e){tst(e.message)}
+  }
+  function prevMo(){if(mo===0){setMo(11);setYr(y=>y-1)}else setMo(m=>m-1)}
+  function nextMo(){if(mo===11){setMo(0);setYr(y=>y+1)}else setMo(m=>m+1)}
+
+  function goalCur(g){
+    if(g.auto===false)return g.manual||0;
+    const lbl=(g.label||'').toLowerCase();
+    if(lbl.includes('play')||lbl.includes('view'))return cMain;
+    if(lbl.includes('save'))return cSaves;
+    if(lbl.includes('share'))return cShares;
+    if(lbl.includes('publish'))return allR.filter(r=>r.status==='approved'||r[mainK]!=null).length;
+    if(lbl.includes('outlier')||lbl.includes('viral'))return outliers.length;
+    if(lbl.includes('engag')){const rch=perfR.reduce((s,r)=>s+(r.reach||0),0);return rch?+((perfR.reduce((s,r)=>s+((r.likes||0)+(r.comments||0)+(r.shares||0)+(r.saves||0)),0)/rch*100).toFixed(1)):0}
+    if(lbl.includes('watch time'))return+(perfR.reduce((s,r)=>s+(r.watchTimeMins||0),0)/60).toFixed(1);
+    return g.manual||0;
+  }
+
+  function renderGoals(){
+    const title=MN[mo].substring(0,3).toUpperCase()+" GOALS";
+    return<div className="goals-panel">
+      <div className="goals-hdr"><span className="goals-title"><i/>{title}</span></div>
+      {goals.map(g=>{const cur=goalCur(g);const pct=g.target?Math.min(cur/g.target*100,100):0;
+        return<div key={g.id} className="goal-row">
+          <span className="goal-label">{GI[g.icon]||GI.star}{g.label}</span>
+          <div className="goal-bar-wrap"><div className="goal-bar-fill" style={{width:pct+'%',background:pct>=100?'var(--gn)':'var(--gd)'}}/></div>
+          {g.auto===false&&isAdmin?<><input className="goal-override" type="number" placeholder="—" value={g.manual??""} onChange={e=>{const ng=goals.map(x=>x.id===g.id?{...x,manual:e.target.value?+e.target.value:null}:x);saveData(undefined,ng)}}/><span className="goal-vals">/ {fmt(g.target)}</span></>
+          :<span className="goal-vals"><b>{fmt(cur)}</b> / {fmt(g.target)}</span>}
+        </div>})}
+    </div>;
+  }
+
+  const trkP=tks.map(t=>{const ps=perfR.filter(r=>r.track===t.id);return{...t,ct:ps.length,totalSaves:ps.reduce((s,r)=>s+(r.saves||0),0)}}).sort((a,b)=>b.totalSaves-a.totalSaves);
+  const fmtP=pl.fmts.map(f=>{const ps=perfR.filter(r=>r.format===f.id);return{...f,ct:ps.length,avgSaves:ps.length?Math.round(ps.reduce((s,r)=>s+(r.saves||0),0)/ps.length*10)/10:0}});
+  const maxFS=Math.max(...fmtP.map(f=>f.avgSaves),1);const maxTS=Math.max(...trkP.map(t=>t.totalSaves),1);
+  const topSaves=[...perfR].sort((a,b)=>(b.saves||0)-(a.saves||0)).slice(0,8);
+  const fnlP=FN.map(f=>{const ps=perfR.filter(r=>r.funnel===f);return{s:f,ct:ps.length,avgM:ps.length?Math.round(ps.reduce((s,r)=>s+(r[mainK]||0),0)/ps.length):0,avgS:ps.length?Math.round(ps.reduce((s,r)=>s+(r.saves||0),0)/ps.length*10)/10:0}});
+
+  if(loading)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',color:'var(--txM)',fontFamily:'var(--mn)',fontSize:11}}>Loading...</div>;
+
+  return<div>
+    <div className="top">
+      <div className="top-l">
+        <span className="logo">Perceptionism Lab</span><span className="sep">|</span>
+        <div className="tabs"><button className={`tab${view==='calendar'?' on':''}`} onClick={()=>setView('calendar')}>CALENDAR</button><button className={`tab${view==='dashboard'?' on':''}`} onClick={()=>setView('dashboard')}>DASHBOARD</button></div>
+        {isAdmin&&<><span className="sep">|</span>
+        <div className="cl-tabs">{cls.map(c=><button key={c.id} className={`cl${aC===c.id?' on':''}`} style={aC===c.id?{borderColor:c.color,color:c.color,background:c.color+'14'}:{}} onClick={()=>setAC(c.id)}>{c.name}</button>)}<button className="cl add" onClick={()=>sCM(true)}>+</button></div></>}
+        {!isAdmin&&<><span className="sep">|</span><span style={{fontSize:10,color:'var(--gd)',fontFamily:'var(--mn)'}}>{auth.clientName}</span></>}
+        <span className="sep">|</span>
+        <div className="tabs"><button className={`tab${plat==='instagram'?' on':''}`} onClick={()=>setPlat('instagram')}>INSTA</button><button className={`tab${plat==='youtube'?' on':''}`} onClick={()=>setPlat('youtube')}>YT</button></div>
+      </div>
+      <div className="mo"><button onClick={prevMo}>◂</button><span>{MN[mo]} {yr}</span><button onClick={nextMo}>▸</button></div>
+      <div className="top-r">
+        {isAdmin&&<button className="btn" onClick={()=>sSO(true)}>⚙</button>}
+        {isAdmin&&view==='calendar'&&<button className="btn" onClick={apprAll}>APPROVE ALL</button>}
+      </div>
+    </div>
+
+    {view==='calendar'&&<>
+    <div className="sbar">
+      <span style={{color:'var(--txM)',fontFamily:'var(--mn)',letterSpacing:1.5}}>{pl.fl}</span><span className="sep">|</span>
+      <span><b style={{color:allR.filter(r=>r.status==='approved').length?'var(--gn)':'var(--txM)'}}>{allR.filter(r=>r.status==='approved').length}</b> <span style={{color:'var(--txM)'}}>approved</span></span>
+      <span><b style={{color:allR.filter(r=>r.status==='pending').length?'var(--gd)':'var(--txM)'}}>{allR.filter(r=>r.status==='pending').length}</b> <span style={{color:'var(--txM)'}}>pending</span></span>
+      <span><b style={{color:allR.filter(r=>r.recorded).length?'var(--pr)':'var(--txM)'}}>{allR.filter(r=>r.recorded).length}</b> <span style={{color:'var(--txM)'}}>recorded</span></span>
+      {outliers.length>0&&<><span className="sep">|</span><span><b style={{color:'var(--gd)'}}>{outliers.length}</b> <span style={{color:'var(--gd)'}}>⭐ outliers</span></span></>}
+    </div>
+    <div style={{padding:'14px 18px 50px'}}>
+      {weeks.map((w,wi)=><div key={w.id} className="wk">
+        <div className="wk-h"><div className="wk-h-l"><span className="wk-n">W{wi+1}</span><div><span className="wk-t">WEEK {wi+1} — {w.title}</span><div className="wk-s">{w.sub}</div></div></div>{isAdmin&&<div style={{display:'flex',gap:4}}><button className="wk-eb" onClick={()=>{sWE(wi);setWkT(w.title);setWkS(w.sub)}}>✎</button>{weeks.length>1&&<button className="wk-eb" onClick={()=>rmW(wi)}>✕</button>}</div>}</div>
+        <div className="wk-g">{w.reels.map((r,ri)=><RC key={r.id} reel={r} tracks={tks} platId={plat} onClick={()=>sEM({wi,ri})} onTR={togR} isOut={isOut(r)}/>)}{isAdmin&&<div className="addc" onClick={()=>addR(wi)}><span style={{fontSize:18,color:'var(--txM)'}}>+</span><span style={{fontSize:7,color:'var(--txM)',fontFamily:'var(--mn)',letterSpacing:1.5}}>{pl.il.toUpperCase()}</span></div>}</div>
+      </div>)}
+      {isAdmin&&<button onClick={addW} style={{width:'100%',padding:'10px',borderRadius:6,border:'1px dashed var(--bd)',background:'transparent',color:'var(--txM)',fontSize:9,cursor:'pointer',fontFamily:'var(--mn)',letterSpacing:1.5}}>+ ADD WEEK</button>}
+    </div></>}
+
+    {view==='dashboard'&&<div className="dsh">
+      {renderGoals()}
+      {perfR.length===0?<div style={{textAlign:'center',padding:'50px',color:'var(--txM)'}}><p style={{fontSize:16,fontWeight:700,color:'var(--tx)',marginBottom:6}}>No performance data</p><p style={{fontSize:11}}>Add analytics to reels in the Calendar tab</p></div>:<>
+      <div className="card"><div className="card-t">Channel Overview — {MN[mo]} {yr}</div>
+        <div className="og">
+          <div className="oi"><div className="oi-v" style={{color:'var(--tx)'}}>{perfR.length}</div><div className="oi-l">Published</div><Delta c={perfR.length} p={pPerf.length}/></div>
+          <div className="oi"><div className="oi-v" style={{color:'var(--bl)'}}>{fmt(cMain)}</div><div className="oi-l">Total {mainK}</div><Delta c={cMain} p={pMain}/></div>
+          <div className="oi"><div className="oi-v" style={{color:'var(--gd)'}}>{cSaves}</div><div className="oi-l">Saves</div><Delta c={cSaves} p={pSaves}/></div>
+          <div className="oi"><div className="oi-v" style={{color:'var(--gn)'}}>{cShares}</div><div className="oi-l">Shares</div><Delta c={cShares} p={pShares}/></div>
+          <div className="oi"><div className="oi-v" style={{color:'var(--gd)'}}>{outliers.length}</div><div className="oi-l">⭐ Outliers</div></div>
+          {plat==="instagram"&&<div className="oi"><div className="oi-v">{perfR.length?Math.round(perfR.reduce((s,r)=>s+(r.avgWatch||0),0)/perfR.length):0}s</div><div className="oi-l">Avg Watch</div></div>}
+          {plat==="youtube"&&<div className="oi"><div className="oi-v">{perfR.length?(perfR.reduce((s,r)=>s+(r.ctr||0),0)/perfR.length).toFixed(1):0}%</div><div className="oi-l">Avg CTR</div></div>}
+        </div>
+      </div>
+      {outliers.length>0&&<div className="card"><div className="card-t">⭐ Outliers — Double Down</div>{outliers.map(r=><div key={r.id} className="out-card"><div className="out-hook">{r.hook}</div><div className="out-meta">{tks.find(t=>t.id===r.track)?.l} · {pl.fmts.find(f=>f.id===r.format)?.l} · {r.funnel} · {fmt(r[mainK])} {mainK} · {r.saves} saves · {r.shares} shares</div><div className="out-why">{outWhy(r)}</div></div>)}</div>}
+      <div className="card"><div className="card-t">What's Working — By Saves</div>
+        <table className="tbl"><thead><tr><th>Hook</th><th>Track</th><th>Format</th><th>Stage</th><th className="r">{mainK.charAt(0).toUpperCase()+mainK.slice(1)}</th><th className="r">Shares</th><th className="r" style={{color:'var(--gd)'}}>Saves</th></tr></thead>
+        <tbody>{topSaves.map(r=>{const t=tks.find(x=>x.id===r.track);const f=pl.fmts.find(x=>x.id===r.format);return<tr key={r.id}><td className="hk">{r.hook}</td><td><span style={{fontSize:7,color:t?.c,fontFamily:'var(--mn)'}}>{t?.l}</span></td><td><span style={{fontSize:7,color:f?.c,fontFamily:'var(--mn)'}}>{f?.l}</span></td><td className="r">{r.funnel}</td><td className="r">{fmt(r[mainK])}</td><td className="r">{r.shares}</td><td className="r hi">{r.saves}</td></tr>})}</tbody></table>
+      </div>
+      <div className="row2">
+        <div className="card"><div className="card-t">Track → Saves</div>{trkP.filter(t=>t.ct>0).map(t=><div key={t.id} className="tr-row"><span className="tr-dot" style={{background:t.c}}/><span className="tr-nm">{t.l}</span><span className="tr-v">{t.totalSaves}</span><div className="tr-bar"><div className="tr-bf" style={{width:`${t.totalSaves/maxTS*100}%`,background:t.c}}/></div><span className="tr-ct">{t.ct} reels</span></div>)}</div>
+        <div className="card"><div className="card-t">Format → Avg Saves</div><div className="bars">{fmtP.map(f=><div key={f.id} className="bar-c"><div className="bar-v" style={{color:f.c}}>{f.ct?f.avgSaves:'—'}</div><div className="bar-w"><div className="bar-f" style={{height:`${f.ct?Math.max(f.avgSaves/maxFS*100,3):3}%`,background:f.c,opacity:f.ct?1:.15}}/></div><div className="bar-l">{f.l}</div></div>)}</div></div>
+      </div>
+      <div className="card"><div className="card-t">Funnel Stage</div>
+        <table className="tbl"><thead><tr><th>Stage</th><th className="r">Reels</th><th className="r">Avg {mainK}</th><th className="r" style={{color:'var(--gd)'}}>Avg Saves</th></tr></thead>
+        <tbody>{fnlP.map(f=><tr key={f.s}><td style={{fontWeight:700}}>{f.s}</td><td className="r">{f.ct}</td><td className="r">{fmt(f.avgM)}</td><td className="r hi">{f.avgS}</td></tr>)}</tbody></table>
+      </div></>}
+    </div>}
+
+    {eM&&weeks[eM.wi]?.reels[eM.ri]&&<RM reel={weeks[eM.wi].reels[eM.ri]} tracks={tks} platId={plat} onSave={saveR} onAppr={apprR} onDel={delR} onDupe={dupeReelFn} onClose={()=>sEM(null)} isAdmin={isAdmin}/>}
+    {wE!==null&&weeks[wE]&&<div className="ov" onClick={()=>sWE(null)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Edit Week {wE+1}</span><button className="mx" onClick={()=>sWE(null)}>✕</button></div><div className="mb"><div><label className="fl">Title</label><input className="fi" value={wkT} onChange={e=>setWkT(e.target.value)}/></div><div><label className="fl">Subtitle</label><input className="fi" value={wkS} onChange={e=>setWkS(e.target.value)}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={saveWk}>SAVE</button></div></div></div>}
+    {sO&&isAdmin&&<div className="ov" onClick={()=>sSO(false)}><div className="mdl" style={{maxWidth:460}} onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Settings</span><button className="mx" onClick={()=>sSO(false)}>✕</button></div><div className="mb">
+      <div><label className="fl">Slack Webhook</label><input className="fi" style={{fontSize:10}} placeholder="https://hooks.slack.com/..." defaultValue={slk} id="swh"/></div>
+      <div className="sec">Narrative Tracks</div>
+      <div className="trk-list">{tks.map(t=><div key={t.id} className="trk-item"><div className="trk-dot" style={{background:t.c}} onClick={()=>sTrkEdit(trkEdit===t.id?null:t.id)}>{trkEdit===t.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===t.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=tks.map(x=>x.id===t.id?{...x,c}:x);setTks(n);put('/api/settings',{tracks:n});sTrkEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={t.l} onChange={e=>{const n=tks.map(x=>x.id===t.id?{...x,l:e.target.value}:x);setTks(n);put('/api/settings',{tracks:n})}}/>{tks.length>1&&<button className="trk-rm" onClick={()=>{const n=tks.filter(x=>x.id!==t.id);setTks(n);put('/api/settings',{tracks:n});tst("Removed")}}>✕</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...tks,{id:'t'+Date.now().toString(36),l:'New Track',c:TCLRS[tks.length%TCLRS.length]}];setTks(n);put('/api/settings',{tracks:n});tst("Added")}}>+ ADD TRACK</button></div>
+      <div className="sec">Clients</div>
+      <div className="trk-list">{cls.map(c=><div key={c.id} className="trk-item"><div className="trk-dot" style={{background:c.color,borderRadius:'50%'}}/><span className="trk-nm" style={{cursor:'default'}}>{c.name}</span><span style={{fontSize:7,color:'var(--txM)',fontFamily:'var(--mn)',cursor:'pointer'}} title={c.token} onClick={()=>{navigator.clipboard?.writeText(c.token);tst("Token copied")}}>🔑</span>{cls.length>1&&<button className="trk-rm" onClick={()=>{sSO(false);rmCl(c.id)}}>✕</button>}</div>)}</div>
+      <div className="sec">Data</div>
+      <div style={{display:'flex',gap:6}}><button className="btn" onClick={async()=>{const d=await get('/api/export');const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`pl-export-${new Date().toISOString().slice(0,10)}.json`;a.click();tst("Exported")}}>EXPORT ALL</button></div>
+    </div><div className="mf"><div/><button className="btn btn-g" onClick={()=>{put('/api/settings',{slk:document.getElementById('swh').value});setSlk(document.getElementById('swh').value);sSO(false);tst("Saved")}}>SAVE</button></div></div></div>}
+    {cM&&isAdmin&&<div className="ov" onClick={()=>sCM(false)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Add Client</span><button className="mx" onClick={()=>sCM(false)}>✕</button></div><div className="mb"><div><label className="fl">Name</label><input className="fi" value={clN} onChange={e=>sClN(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addCl()}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={addCl}>ADD</button></div></div></div>}
+    {toast&&<div className="toast">{toast}</div>}
+  </div>;
+}
+
+// ═══ ROOT ═══
+function App(){
+  const[auth,setAuth]=useState(null);
+  const[checking,setChecking]=useState(true);
+
+  useEffect(()=>{
+    get('/api/me').then(r=>setAuth(r)).catch(()=>{}).finally(()=>setChecking(false));
+  },[]);
+
+  if(checking)return<div style={{display:'flex',alignItems:'center',justifyContent:'center',height:'100vh',color:'var(--txM)',fontFamily:'var(--mn)',fontSize:11}}>Loading...</div>;
+  if(!auth)return<Login onAuth={a=>setAuth(a)}/>;
+  return<MainApp auth={auth}/>;
+}
+ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
+</script>
+</body>
+</html>
