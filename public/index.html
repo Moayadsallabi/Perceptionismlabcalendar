@@ -126,7 +126,7 @@ const P={
 const TCLRS=["#5b8dd9","#c9a84c","#5cb85c","#c44e4e","#a06cd5","#e07c4f","#4ecdc4","#ff6b9d","#95e1d3","#f38181"];
 const FN=["TOF","MOF","BOF"];const MN=["January","February","March","April","May","June","July","August","September","October","November","December"];
 function uid(){return Date.now().toString(36)+Math.random().toString(36).substr(2,6)}
-function fmt(n){if(n==null||isNaN(n))return"â€”";if(n>=1e6)return(n/1e6).toFixed(1)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return String(Math.round(n*10)/10)}
+function fmt(n){if(n==null||isNaN(n))return"-";if(n>=1e6)return(n/1e6).toFixed(1)+"M";if(n>=1e3)return(n/1e3).toFixed(1)+"K";return String(Math.round(n*10)/10)}
 function pctDt(c,p){if(!p||!c)return null;return Math.round((c-p)/p*100)}
 function mkk(y,m){return`${y}-${String(m+1).padStart(2,'0')}`}
 function dw(p){return p==="youtube"?[{id:uid(),title:"FOUNDATION",sub:"Core belief disruption.",reels:[]},{id:uid(),title:"PROOF",sub:"Show the methodology.",reels:[]},{id:uid(),title:"DEPTH",sub:"Full breakdowns.",reels:[]},{id:uid(),title:"CONVERSION",sub:"Bridge to offer.",reels:[]}]:[{id:uid(),title:"ENTRY",sub:"Disrupt the volume belief.",reels:[]},{id:uid(),title:"AUTHORITY BUILD",sub:"Engineering vs. growth.",reels:[]},{id:uid(),title:"DEPTH",sub:"Upstream diagnosis.",reels:[]},{id:uid(),title:"CATEGORY PILLAR",sub:"Category claim lands.",reels:[]}]}
@@ -193,7 +193,7 @@ function RM({reel:r,tracks:tks,fmts,platId:pid,onSave,onClose,onDel,onAppr,onDup
   const u=(k,v)=>sD(p=>({...p,[k]:v}));
   const canEditContent=isAdmin; // clients can't edit hooks/captions
   return<div className="ov" onClick={onClose}><div className="mdl" onClick={e=>e.stopPropagation()}>
-    <div className="mh"><span style={{fontSize:14,fontWeight:700}}>{pl.il} {d.date?`â€” ${d.date}`:''}</span><button className="mx" onClick={onClose}>âœ•</button></div>
+    <div className="mh"><span style={{fontSize:14,fontWeight:700}}>{pl.il} {d.date?`- ${d.date}`:''}</span><button className="mx" onClick={onClose}>x</button></div>
     <div className="mb">
       {canEditContent?<>
         <div><label className="fl">Date</label><input className="fi" placeholder="e.g. Mon Mar 4" value={d.date} onChange={e=>u("date",e.target.value)}/></div>
@@ -206,7 +206,7 @@ function RM({reel:r,tracks:tks,fmts,platId:pid,onSave,onClose,onDel,onAppr,onDup
         <div><label className="fl">Direction / Notes for Editor</label><textarea className="fi ta" value={d.direction} onChange={e=>u("direction",e.target.value)}/></div>
         <div><label className="fl">Caption & CTA</label><textarea className="fi ta-s" value={d.caption} onChange={e=>u("caption",e.target.value)}/></div>
       </>:<>
-        <div style={{padding:'8px 0'}}><div className="fl">Hook</div><div style={{fontSize:14,fontWeight:700}}>{d.hook||'â€”'}</div></div>
+        <div style={{padding:'8px 0'}}><div className="fl">Hook</div><div style={{fontSize:14,fontWeight:700}}>{d.hook||'-'}</div></div>
         {d.direction&&<div><div className="fl">Direction</div><div style={{fontSize:11,color:'var(--txS)',lineHeight:1.6}}>{d.direction}</div></div>}
         {d.caption&&<div><div className="fl">Caption</div><div style={{fontSize:11,color:'var(--txS)',lineHeight:1.6}}>{d.caption}</div></div>}
       </>}
@@ -219,7 +219,7 @@ function RM({reel:r,tracks:tks,fmts,platId:pid,onSave,onClose,onDel,onAppr,onDup
       {pid==="instagram"&&d.reach>0&&<div style={{fontSize:10,color:'var(--txM)',fontFamily:'var(--mn)'}}>Eng Rate: {(((d.likes||0)+(d.comments||0)+(d.shares||0)+(d.saves||0))/d.reach*100).toFixed(1)}% Â· Save Rate: {((d.saves||0)/d.reach*100).toFixed(2)}%</div>}
       <div style={{fontSize:8,color:'var(--txM)',fontFamily:'var(--mn)',fontStyle:'italic'}}>DMs: log only if directly attributable to this reel</div>
     </div>
-    <div className="mf"><div style={{display:'flex',gap:4}}><button className="btn btn-gn" onClick={()=>onAppr({...d,status:d.status==='approved'?'pending':'approved'})}>âœ“</button><button className="btn btn-g" onClick={()=>onSave(d)}>SAVE</button>{isAdmin&&<button className="btn" onClick={()=>onDupe(d)} title="Duplicate">â§‰</button>}</div><div style={{display:'flex',gap:4}}>{isAdmin&&<button className="btn btn-rd" onClick={()=>sCDel(true)}>DEL</button>}<button className="btn" onClick={onClose}>âœ•</button></div></div>
+    <div className="mf"><div style={{display:'flex',gap:4}}><button className="btn btn-gn" onClick={()=>onAppr({...d,status:d.status==='approved'?'pending':'approved'})}>âœ“</button><button className="btn btn-g" onClick={()=>onSave(d)}>SAVE</button>{isAdmin&&<button className="btn" onClick={()=>onDupe(d)} title="Duplicate">dup</button>}</div><div style={{display:'flex',gap:4}}>{isAdmin&&<button className="btn btn-rd" onClick={()=>sCDel(true)}>DEL</button>}<button className="btn" onClick={onClose}>x</button></div></div>
   </div>{cDel&&<div className="cfm" onClick={()=>sCDel(false)}><div className="cfm-b" onClick={e=>e.stopPropagation()}><p>Delete this {pl.il.toLowerCase()}?</p><div style={{display:'flex',gap:5,justifyContent:'center'}}><button className="btn" onClick={()=>sCDel(false)}>Cancel</button><button className="btn btn-rd" onClick={()=>onDel(d.id)}>Delete</button></div></div></div>}</div>;
 }
 
@@ -308,7 +308,7 @@ function MainApp({auth}){
   const avgShares=perfR.length?perfR.reduce((s,r)=>s+(r.shares||0),0)/perfR.length:0;
   const avgMain=perfR.length?perfR.reduce((s,r)=>s+(r[mainK]||0),0)/perfR.length:0;
   function isOut(r){if(!r[mainK])return false;return(r.saves>avgSaves*1.5)||(r.shares>avgShares*1.5)||(r[mainK]>avgMain*1.5)}
-  function outWhy(r){if(r.saves>avgSaves*1.5)return"High saves â€” belief shifted. Build a deeper version.";if(r.shares>avgShares*1.5)return"High shares â€” people distributing your frame. Double down.";if(r[mainK]>avgMain*1.5)return"Hook pulled cold traffic. Test this structure on next 3.";return""}
+  function outWhy(r){if(r.saves>avgSaves*1.5)return"High saves - belief shifted. Build a deeper version.";if(r.shares>avgShares*1.5)return"High shares - people distributing your frame. Double down.";if(r[mainK]>avgMain*1.5)return"Hook pulled cold traffic. Test this structure on next 3.";return""}
   const outliers=perfR.filter(isOut);
 
   const pPerf=prevWeeks.flatMap(w=>w.reels).filter(r=>r[mainK]!=null);
@@ -329,7 +329,7 @@ function MainApp({auth}){
   function saveWk(){const nw=[...weeks];nw[wE]={...nw[wE],title:wkT,sub:wkS};uW(nw);sWE(null);tst("Updated")}
   async function addCl(){
     if(!clN.trim())return;
-    try{const c=await post('/api/clients',{name:clN.trim(),color:TCLRS[cls.length%TCLRS.length]});setCls(pr=>[...pr,c]);setAC(c.id);sClN("");sCM(false);tst(c.name+" added â€” token: "+c.token)}catch(e){tst(e.message)}
+    try{const c=await post('/api/clients',{name:clN.trim(),color:TCLRS[cls.length%TCLRS.length]});setCls(pr=>[...pr,c]);setAC(c.id);sClN("");sCM(false);tst(c.name+" added - token: "+c.token)}catch(e){tst(e.message)}
   }
   async function rmCl(cid){
     if(cls.length<=1)return;if(!confirm(`Remove "${cls.find(c=>c.id===cid)?.name}"?`))return;
@@ -359,7 +359,7 @@ function MainApp({auth}){
         return<div key={g.id} className="goal-row">
           <span className="goal-label">{GI[g.icon]||GI.star}{g.label}</span>
           <div className="goal-bar-wrap"><div className="goal-bar-fill" style={{width:pct+'%',background:pct>=100?'var(--gn)':'var(--gd)'}}/></div>
-          {g.auto===false&&isAdmin?<><input className="goal-override" type="number" placeholder="â€”" value={g.manual??""} onChange={e=>{const ng=goals.map(x=>x.id===g.id?{...x,manual:e.target.value?+e.target.value:null}:x);saveData(undefined,ng)}}/><span className="goal-vals">/ {fmt(g.target)}</span></>
+          {g.auto===false&&isAdmin?<><input className="goal-override" type="number" placeholder="-" value={g.manual??""} onChange={e=>{const ng=goals.map(x=>x.id===g.id?{...x,manual:e.target.value?+e.target.value:null}:x);saveData(undefined,ng)}}/><span className="goal-vals">/ {fmt(g.target)}</span></>
           :<span className="goal-vals"><b>{fmt(cur)}</b> / {fmt(g.target)}</span>}
         </div>})}
     </div>;
@@ -401,7 +401,7 @@ function MainApp({auth}){
     </div>
     <div style={{padding:'14px 18px 50px'}}>
       {weeks.map((w,wi)=><div key={w.id} className="wk">
-        <div className="wk-h"><div className="wk-h-l"><span className="wk-n">W{wi+1}</span><div><span className="wk-t">WEEK {wi+1} â€” {w.title}</span><div className="wk-s">{w.sub}</div></div></div>{isAdmin&&<div style={{display:'flex',gap:4}}><button className="wk-eb" onClick={()=>{sWE(wi);setWkT(w.title);setWkS(w.sub)}}>âœŽ</button>{weeks.length>1&&<button className="wk-eb" onClick={()=>rmW(wi)}>âœ•</button>}</div>}</div>
+        <div className="wk-h"><div className="wk-h-l"><span className="wk-n">W{wi+1}</span><div><span className="wk-t">WEEK {wi+1} - {w.title}</span><div className="wk-s">{w.sub}</div></div></div>{isAdmin&&<div style={{display:'flex',gap:4}}><button className="wk-eb" onClick={()=>{sWE(wi);setWkT(w.title);setWkS(w.sub)}}>>edit</button>{weeks.length>1&&<button className="wk-eb" onClick={()=>rmW(wi)}>x</button>}</div>}</div>
         <div className="wk-g">{w.reels.map((r,ri)=><RC key={r.id} reel={r} tracks={tks} fmts={fmts} platId={plat} onClick={()=>sEM({wi,ri})} onTR={togR} isOut={isOut(r)}/>)}{isAdmin&&<div className="addc" onClick={()=>addR(wi)}><span style={{fontSize:18,color:'var(--txM)'}}>+</span><span style={{fontSize:7,color:'var(--txM)',fontFamily:'var(--mn)',letterSpacing:1.5}}>{pl.il.toUpperCase()}</span></div>}</div>
       </div>)}
       {isAdmin&&<button onClick={addW} style={{width:'100%',padding:'10px',borderRadius:6,border:'1px dashed var(--bd)',background:'transparent',color:'var(--txM)',fontSize:9,cursor:'pointer',fontFamily:'var(--mn)',letterSpacing:1.5}}>+ ADD WEEK</button>}
@@ -410,7 +410,7 @@ function MainApp({auth}){
     {view==='dashboard'&&<div className="dsh">
       {renderGoals()}
       {perfR.length===0?<div style={{textAlign:'center',padding:'50px',color:'var(--txM)'}}><p style={{fontSize:16,fontWeight:700,color:'var(--tx)',marginBottom:6}}>No performance data</p><p style={{fontSize:11}}>Add analytics to reels in the Calendar tab</p></div>:<>
-      <div className="card"><div className="card-t">Channel Overview â€” {MN[mo]} {yr}</div>
+      <div className="card"><div className="card-t">Channel Overview - {MN[mo]} {yr}</div>
         <div className="og">
           <div className="oi"><div className="oi-v" style={{color:'var(--tx)'}}>{perfR.length}</div><div className="oi-l">Published</div><Delta c={perfR.length} p={pPerf.length}/></div>
           <div className="oi"><div className="oi-v" style={{color:'var(--bl)'}}>{fmt(cMain)}</div><div className="oi-l">Total {mainK}</div><Delta c={cMain} p={pMain}/></div>
@@ -421,14 +421,14 @@ function MainApp({auth}){
           {plat==="youtube"&&<div className="oi"><div className="oi-v">{perfR.length?(perfR.reduce((s,r)=>s+(r.ctr||0),0)/perfR.length).toFixed(1):0}%</div><div className="oi-l">Avg CTR</div></div>}
         </div>
       </div>
-      {outliers.length>0&&<div className="card"><div className="card-t">â­ Outliers â€” Double Down</div>{outliers.map(r=><div key={r.id} className="out-card"><div className="out-hook">{r.hook}</div><div className="out-meta">{tks.find(t=>t.id===r.track)?.l} Â· {fmts.find(f=>f.id===r.format)?.l} Â· {r.funnel} Â· {fmt(r[mainK])} {mainK} Â· {r.saves} saves Â· {r.shares} shares</div><div className="out-why">{outWhy(r)}</div></div>)}</div>}
-      <div className="card"><div className="card-t">What's Working â€” By Saves</div>
+      {outliers.length>0&&<div className="card"><div className="card-t">â­ Outliers - Double Down</div>{outliers.map(r=><div key={r.id} className="out-card"><div className="out-hook">{r.hook}</div><div className="out-meta">{tks.find(t=>t.id===r.track)?.l} Â· {fmts.find(f=>f.id===r.format)?.l} Â· {r.funnel} Â· {fmt(r[mainK])} {mainK} Â· {r.saves} saves Â· {r.shares} shares</div><div className="out-why">{outWhy(r)}</div></div>)}</div>}
+      <div className="card"><div className="card-t">What's Working - By Saves</div>
         <table className="tbl"><thead><tr><th>Hook</th><th>Track</th><th>Format</th><th>Stage</th><th className="r">{mainK.charAt(0).toUpperCase()+mainK.slice(1)}</th><th className="r">Shares</th><th className="r" style={{color:'var(--gd)'}}>Saves</th></tr></thead>
         <tbody>{topSaves.map(r=>{const t=tks.find(x=>x.id===r.track);const f=fmts.find(x=>x.id===r.format);return<tr key={r.id}><td className="hk">{r.hook}</td><td><span style={{fontSize:7,color:t?.c,fontFamily:'var(--mn)'}}>{t?.l}</span></td><td><span style={{fontSize:7,color:f?.c,fontFamily:'var(--mn)'}}>{f?.l}</span></td><td className="r">{r.funnel}</td><td className="r">{fmt(r[mainK])}</td><td className="r">{r.shares}</td><td className="r hi">{r.saves}</td></tr>})}</tbody></table>
       </div>
       <div className="row2">
         <div className="card"><div className="card-t">Track â†’ Saves</div>{trkP.filter(t=>t.ct>0).map(t=><div key={t.id} className="tr-row"><span className="tr-dot" style={{background:t.c}}/><span className="tr-nm">{t.l}</span><span className="tr-v">{t.totalSaves}</span><div className="tr-bar"><div className="tr-bf" style={{width:`${t.totalSaves/maxTS*100}%`,background:t.c}}/></div><span className="tr-ct">{t.ct} reels</span></div>)}</div>
-        <div className="card"><div className="card-t">Format â†’ Avg Saves</div><div className="bars">{fmtP.map(f=><div key={f.id} className="bar-c"><div className="bar-v" style={{color:f.c}}>{f.ct?f.avgSaves:'â€”'}</div><div className="bar-w"><div className="bar-f" style={{height:`${f.ct?Math.max(f.avgSaves/maxFS*100,3):3}%`,background:f.c,opacity:f.ct?1:.15}}/></div><div className="bar-l">{f.l}</div></div>)}</div></div>
+        <div className="card"><div className="card-t">Format â†’ Avg Saves</div><div className="bars">{fmtP.map(f=><div key={f.id} className="bar-c"><div className="bar-v" style={{color:f.c}}>{f.ct?f.avgSaves:'-'}</div><div className="bar-w"><div className="bar-f" style={{height:`${f.ct?Math.max(f.avgSaves/maxFS*100,3):3}%`,background:f.c,opacity:f.ct?1:.15}}/></div><div className="bar-l">{f.l}</div></div>)}</div></div>
       </div>
       <div className="card"><div className="card-t">Funnel Stage</div>
         <table className="tbl"><thead><tr><th>Stage</th><th className="r">Reels</th><th className="r">Avg {mainK}</th><th className="r" style={{color:'var(--gd)'}}>Avg Saves</th></tr></thead>
@@ -437,24 +437,24 @@ function MainApp({auth}){
     </div>}
 
     {eM&&weeks[eM.wi]?.reels[eM.ri]&&<RM reel={weeks[eM.wi].reels[eM.ri]} tracks={tks} fmts={fmts} platId={plat} onSave={saveR} onAppr={apprR} onDel={delR} onDupe={dupeReelFn} onClose={()=>sEM(null)} isAdmin={isAdmin}/>}
-    {wE!==null&&weeks[wE]&&<div className="ov" onClick={()=>sWE(null)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Edit Week {wE+1}</span><button className="mx" onClick={()=>sWE(null)}>âœ•</button></div><div className="mb"><div><label className="fl">Title</label><input className="fi" value={wkT} onChange={e=>setWkT(e.target.value)}/></div><div><label className="fl">Subtitle</label><input className="fi" value={wkS} onChange={e=>setWkS(e.target.value)}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={saveWk}>SAVE</button></div></div></div>}
-    {sO&&isAdmin&&<div className="ov" onClick={()=>sSO(false)}><div className="mdl" style={{maxWidth:460}} onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Settings</span><button className="mx" onClick={()=>sSO(false)}>âœ•</button></div><div className="mb">
+    {wE!==null&&weeks[wE]&&<div className="ov" onClick={()=>sWE(null)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Edit Week {wE+1}</span><button className="mx" onClick={()=>sWE(null)}>x</button></div><div className="mb"><div><label className="fl">Title</label><input className="fi" value={wkT} onChange={e=>setWkT(e.target.value)}/></div><div><label className="fl">Subtitle</label><input className="fi" value={wkS} onChange={e=>setWkS(e.target.value)}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={saveWk}>SAVE</button></div></div></div>}
+    {sO&&isAdmin&&<div className="ov" onClick={()=>sSO(false)}><div className="mdl" style={{maxWidth:460}} onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Settings</span><button className="mx" onClick={()=>sSO(false)}>x</button></div><div className="mb">
       <div><label className="fl">Slack Webhook</label><input className="fi" style={{fontSize:10}} placeholder="https://hooks.slack.com/..." defaultValue={slk} id="swh"/></div>
       <div className="sec">Narrative Tracks</div>
-      <div className="trk-list">{tks.map(t=><div key={t.id} className="trk-item"><div className="trk-dot" style={{background:t.c}} onClick={()=>sTrkEdit(trkEdit===t.id?null:t.id)}>{trkEdit===t.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===t.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=tks.map(x=>x.id===t.id?{...x,c}:x);setTks(n);put('/api/settings',{tracks:n});sTrkEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={t.l} onChange={e=>{const n=tks.map(x=>x.id===t.id?{...x,l:e.target.value}:x);setTks(n);put('/api/settings',{tracks:n})}}/>{tks.length>1&&<button className="trk-rm" onClick={()=>{const n=tks.filter(x=>x.id!==t.id);setTks(n);put('/api/settings',{tracks:n});tst("Removed")}}>âœ•</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...tks,{id:'t'+Date.now().toString(36),l:'New Track',c:TCLRS[tks.length%TCLRS.length]}];setTks(n);put('/api/settings',{tracks:n});tst("Added")}}>+ ADD TRACK</button></div>
+      <div className="trk-list">{tks.map(t=><div key={t.id} className="trk-item"><div className="trk-dot" style={{background:t.c}} onClick={()=>sTrkEdit(trkEdit===t.id?null:t.id)}>{trkEdit===t.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===t.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=tks.map(x=>x.id===t.id?{...x,c}:x);setTks(n);put('/api/settings',{tracks:n});sTrkEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={t.l} onChange={e=>{const n=tks.map(x=>x.id===t.id?{...x,l:e.target.value}:x);setTks(n);put('/api/settings',{tracks:n})}}/>{tks.length>1&&<button className="trk-rm" onClick={()=>{const n=tks.filter(x=>x.id!==t.id);setTks(n);put('/api/settings',{tracks:n});tst("Removed")}}>x</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...tks,{id:'t'+Date.now().toString(36),l:'New Track',c:TCLRS[tks.length%TCLRS.length]}];setTks(n);put('/api/settings',{tracks:n});tst("Added")}}>+ ADD TRACK</button></div>
 
       <div className="sec">Instagram Formats</div>
-      <div className="trk-list">{igFmts.map(f=><div key={f.id} className="trk-item"><div className="trk-dot" style={{background:f.c}} onClick={()=>setFmtEdit(fmtEdit===f.id?null:f.id)}>{fmtEdit===f.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===f.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=igFmts.map(x=>x.id===f.id?{...x,c}:x);setIgFmts(n);put('/api/settings',{fmts_instagram:n});setFmtEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={f.l} onChange={e=>{const n=igFmts.map(x=>x.id===f.id?{...x,l:e.target.value}:x);setIgFmts(n);put('/api/settings',{fmts_instagram:n})}}/>{igFmts.length>1&&<button className="trk-rm" onClick={()=>{const n=igFmts.filter(x=>x.id!==f.id);setIgFmts(n);put('/api/settings',{fmts_instagram:n});tst("Removed")}}>âœ•</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...igFmts,{id:'f'+Date.now().toString(36),l:'NEW FORMAT',c:TCLRS[igFmts.length%TCLRS.length]}];setIgFmts(n);put('/api/settings',{fmts_instagram:n});tst("Added")}}>+ ADD FORMAT</button></div>
+      <div className="trk-list">{igFmts.map(f=><div key={f.id} className="trk-item"><div className="trk-dot" style={{background:f.c}} onClick={()=>setFmtEdit(fmtEdit===f.id?null:f.id)}>{fmtEdit===f.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===f.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=igFmts.map(x=>x.id===f.id?{...x,c}:x);setIgFmts(n);put('/api/settings',{fmts_instagram:n});setFmtEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={f.l} onChange={e=>{const n=igFmts.map(x=>x.id===f.id?{...x,l:e.target.value}:x);setIgFmts(n);put('/api/settings',{fmts_instagram:n})}}/>{igFmts.length>1&&<button className="trk-rm" onClick={()=>{const n=igFmts.filter(x=>x.id!==f.id);setIgFmts(n);put('/api/settings',{fmts_instagram:n});tst("Removed")}}>x</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...igFmts,{id:'f'+Date.now().toString(36),l:'NEW FORMAT',c:TCLRS[igFmts.length%TCLRS.length]}];setIgFmts(n);put('/api/settings',{fmts_instagram:n});tst("Added")}}>+ ADD FORMAT</button></div>
 
       <div className="sec">YouTube Formats</div>
-      <div className="trk-list">{ytFmts.map(f=><div key={f.id} className="trk-item"><div className="trk-dot" style={{background:f.c}} onClick={()=>setFmtEdit(fmtEdit===f.id?null:f.id)}>{fmtEdit===f.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===f.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=ytFmts.map(x=>x.id===f.id?{...x,c}:x);setYtFmts(n);put('/api/settings',{fmts_youtube:n});setFmtEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={f.l} onChange={e=>{const n=ytFmts.map(x=>x.id===f.id?{...x,l:e.target.value}:x);setYtFmts(n);put('/api/settings',{fmts_youtube:n})}}/>{ytFmts.length>1&&<button className="trk-rm" onClick={()=>{const n=ytFmts.filter(x=>x.id!==f.id);setYtFmts(n);put('/api/settings',{fmts_youtube:n});tst("Removed")}}>âœ•</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...ytFmts,{id:'f'+Date.now().toString(36),l:'NEW FORMAT',c:TCLRS[ytFmts.length%TCLRS.length]}];setYtFmts(n);put('/api/settings',{fmts_youtube:n});tst("Added")}}>+ ADD FORMAT</button></div>
+      <div className="trk-list">{ytFmts.map(f=><div key={f.id} className="trk-item"><div className="trk-dot" style={{background:f.c}} onClick={()=>setFmtEdit(fmtEdit===f.id?null:f.id)}>{fmtEdit===f.id&&<div className="trk-colors" onClick={e=>e.stopPropagation()}>{TCLRS.map(c=><div key={c} className="trk-cp" style={{background:c,border:c===f.c?'2px solid var(--tx)':'1px solid transparent'}} onClick={()=>{const n=ytFmts.map(x=>x.id===f.id?{...x,c}:x);setYtFmts(n);put('/api/settings',{fmts_youtube:n});setFmtEdit(null)}}/>)}</div>}</div><input className="trk-nm" value={f.l} onChange={e=>{const n=ytFmts.map(x=>x.id===f.id?{...x,l:e.target.value}:x);setYtFmts(n);put('/api/settings',{fmts_youtube:n})}}/>{ytFmts.length>1&&<button className="trk-rm" onClick={()=>{const n=ytFmts.filter(x=>x.id!==f.id);setYtFmts(n);put('/api/settings',{fmts_youtube:n});tst("Removed")}}>x</button>}</div>)}<button className="trk-add" onClick={()=>{const n=[...ytFmts,{id:'f'+Date.now().toString(36),l:'NEW FORMAT',c:TCLRS[ytFmts.length%TCLRS.length]}];setYtFmts(n);put('/api/settings',{fmts_youtube:n});tst("Added")}}>+ ADD FORMAT</button></div>
 
       <div className="sec">Clients</div>
       <div className="trk-list">{cls.map(c=><div key={c.id} className="trk-item" style={{flexWrap:'wrap',gap:6}}>
         <div style={{display:'flex',alignItems:'center',gap:6,flex:1,minWidth:0}}>
           <div className="trk-dot" style={{background:c.color,borderRadius:'50%'}}/>
           <span className="trk-nm" style={{cursor:'default'}}>{c.name}</span>
-          {cls.length>1&&<button className="trk-rm" onClick={()=>{sSO(false);rmCl(c.id)}}>âœ•</button>}
+          {cls.length>1&&<button className="trk-rm" onClick={()=>{sSO(false);rmCl(c.id)}}>x</button>}
         </div>
         <div style={{width:'100%',background:'var(--bg)',border:'1px solid var(--bd)',borderRadius:4,padding:'6px 8px',display:'flex',flexDirection:'column',gap:4}}>
           <div style={{display:'flex',alignItems:'center',justifyContent:'space-between'}}>
@@ -468,7 +468,7 @@ function MainApp({auth}){
       <div className="sec">Data</div>
       <div style={{display:'flex',gap:6}}><button className="btn" onClick={async()=>{const d=await get('/api/export');const b=new Blob([JSON.stringify(d,null,2)],{type:'application/json'});const u=URL.createObjectURL(b);const a=document.createElement('a');a.href=u;a.download=`pl-export-${new Date().toISOString().slice(0,10)}.json`;a.click();tst("Exported")}}>EXPORT ALL</button></div>
     </div><div className="mf"><div/><button className="btn btn-g" onClick={()=>{put('/api/settings',{slk:document.getElementById('swh').value});setSlk(document.getElementById('swh').value);sSO(false);tst("Saved")}}>SAVE</button></div></div></div>}
-    {cM&&isAdmin&&<div className="ov" onClick={()=>sCM(false)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Add Client</span><button className="mx" onClick={()=>sCM(false)}>âœ•</button></div><div className="mb"><div><label className="fl">Name</label><input className="fi" value={clN} onChange={e=>sClN(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addCl()}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={addCl}>ADD</button></div></div></div>}
+    {cM&&isAdmin&&<div className="ov" onClick={()=>sCM(false)}><div className="mdl mdl-s" onClick={e=>e.stopPropagation()}><div className="mh"><span style={{fontSize:13,fontWeight:700}}>Add Client</span><button className="mx" onClick={()=>sCM(false)}>x</button></div><div className="mb"><div><label className="fl">Name</label><input className="fi" value={clN} onChange={e=>sClN(e.target.value)} onKeyDown={e=>e.key==='Enter'&&addCl()}/></div></div><div className="mf"><div/><button className="btn btn-g" onClick={addCl}>ADD</button></div></div></div>}
     {toast&&<div className="toast">{toast}</div>}
   </div>;
 }
@@ -490,3 +490,4 @@ ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
 </script>
 </body>
 </html>
+
