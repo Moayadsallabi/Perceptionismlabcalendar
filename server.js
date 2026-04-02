@@ -178,26 +178,30 @@ app.get('/api/me', anyAuth, (req, res) => {
 
 // ═══ SETTINGS (admin only) ═══
 app.get('/api/settings', adminAuth, (req, res) => {
-  const rows = db.exec("SELECT key, value FROM settings WHERE key IN ('tracks', 'slk')");
+  const rows = db.exec("SELECT key, value FROM settings WHERE key IN ('tracks', 'slk', 'fmts_instagram', 'fmts_youtube')");
   const settings = {};
   if (rows.length) rows[0].values.forEach(([k, v]) => {
-    settings[k] = k === 'tracks' ? JSON.parse(v) : v;
+    settings[k] = (k === 'tracks' || k.startsWith('fmts_')) ? JSON.parse(v) : v;
   });
   res.json(settings);
 });
 
 app.put('/api/settings', adminAuth, (req, res) => {
-  const { tracks, slk } = req.body;
+  const { tracks, slk, fmts_instagram, fmts_youtube } = req.body;
   if (tracks !== undefined) db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('tracks', ?)", [JSON.stringify(tracks)]);
   if (slk !== undefined) db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('slk', ?)", [slk]);
+  if (fmts_instagram !== undefined) db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('fmts_instagram', ?)", [JSON.stringify(fmts_instagram)]);
+  if (fmts_youtube !== undefined) db.run("INSERT OR REPLACE INTO settings (key, value) VALUES ('fmts_youtube', ?)", [JSON.stringify(fmts_youtube)]);
   saveDB();
   res.json({ ok: true });
 });
 
-// Tracks endpoint for clients too (read-only)
+// Tracks + formats endpoint for clients too (read-only)
 app.get('/api/tracks', anyAuth, (req, res) => {
-  const rows = db.exec("SELECT value FROM settings WHERE key='tracks'");
-  res.json(rows.length ? JSON.parse(rows[0].values[0][0]) : []);
+  const rows = db.exec("SELECT key, value FROM settings WHERE key IN ('tracks', 'fmts_instagram', 'fmts_youtube')");
+  const result = { tracks: [], fmts_instagram: null, fmts_youtube: null };
+  if (rows.length) rows[0].values.forEach(([k, v]) => { result[k] = JSON.parse(v); });
+  res.json(result);
 });
 
 // ═══ CLIENTS (admin only) ═══
