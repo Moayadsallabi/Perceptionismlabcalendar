@@ -3,5 +3,4 @@ builder = "DOCKERFILE"
 
 [deploy]
 startCommand = "node server.js"
-healthcheckPath = "/api/me"
 restartPolicyType = "ON_FAILURE"
