@@ -101,14 +101,14 @@ button,input,textarea,select{font-family:var(--sn)}textarea{resize:vertical}
 <script type="text/babel">
 const{useState,useEffect,useCallback}=React;
 
-// â•â•â• API HELPERS â•â•â•
+// === API HELPERS ===
 const api=async(url,opts={})=>{const r=await fetch(url,{headers:{'Content-Type':'application/json'},...opts});if(!r.ok){const e=await r.json().catch(()=>({error:'Request failed'}));throw new Error(e.error||'Request failed')}return r.json()};
 const get=url=>api(url);
 const put=(url,body)=>api(url,{method:'PUT',body:JSON.stringify(body)});
 const post=(url,body)=>api(url,{method:'POST',body:JSON.stringify(body)});
 const del=url=>api(url,{method:'DELETE'});
 
-// â•â•â• PLATFORM CONFIG â•â•â•
+// === PLATFORM CONFIG ===
 const DF_FMTS_IG=[{id:"talking-head",l:"TALKING HEAD",c:"#c44e4e"},{id:"walk-talk",l:"WALK & TALK",c:"#5cb85c"},{id:"voiceover",l:"VOICEOVER",c:"#c9a84c"},{id:"text-screen",l:"TEXT-ON-SCREEN",c:"#5b8dd9"}];
 const DF_FMTS_YT=[{id:"breakdown",l:"BREAKDOWN",c:"#c44e4e"},{id:"tutorial",l:"TUTORIAL",c:"#5cb85c"},{id:"talking-head",l:"TALKING HEAD",c:"#c9a84c"},{id:"documentary",l:"DOCUMENTARY",c:"#5b8dd9"},{id:"vlog",l:"VLOG",c:"#a06cd5"}];
 const P={
@@ -138,7 +138,7 @@ const DrvI=()=><svg viewBox="0 0 24 24" fill="none" stroke="#5cb85c" strokeWidth
 const RecI=({on})=><svg viewBox="0 0 24 24" fill={on?"var(--gd)":"none"} stroke={on?"var(--gd)":"var(--txM)"} strokeWidth="2"><circle cx="12" cy="12" r="6"/></svg>;
 const GI={eye:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M1 8s3-5 7-5 7 5 7 5-3 5-7 5-7-5-7-5z"/><circle cx="8" cy="8" r="2"/></svg>,user:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="5" r="3"/><path d="M2 14c0-3 2.5-5 6-5s6 2 6 5"/></svg>,upload:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 10V2m0 0L5 5m3-3l3 3M2 12v1a1 1 0 001 1h10a1 1 0 001-1v-1"/></svg>,msg:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M2 3h12v8H5l-3 3V3z"/></svg>,star:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M8 1l2 4.5 5 .5-3.5 3.5 1 5L8 12l-4.5 2.5 1-5L1 6l5-.5L8 1z"/></svg>,pct:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="5" cy="5" r="2"/><circle cx="11" cy="11" r="2"/><path d="M13 3L3 13"/></svg>,clock:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><circle cx="8" cy="8" r="6"/><path d="M8 4v4l3 2"/></svg>,save:<svg viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5"><path d="M3 1h10l2 2v10a2 2 0 01-2 2H3a2 2 0 01-2-2V3a2 2 0 012-2z"/><path d="M5 1v4h6V1"/><path d="M5 11h6"/></svg>};
 
-// â•â•â• LOGIN SCREEN â•â•â•
+// === LOGIN SCREEN ===
 function Login({onAuth}){
   const[mode,setMode]=useState('admin');
   const[val,setVal]=useState('');
@@ -173,21 +173,21 @@ function Login({onAuth}){
   </div></div>;
 }
 
-// â•â•â• REEL CARD â•â•â•
+// === REEL CARD ===
 function RC({reel:r,tracks:tks,fmts,platId:pid,onClick,onTR,isOut}){
   const pl=P[pid],f=fmts.find(x=>x.id===r.format)||fmts[0],t=tks.find(x=>x.id===r.track)||tks[0];
   const hasP=r[pl.mainK]!=null;
   return<div className={`rc${r.recorded?' rec':''}${isOut?' out':''}`} onClick={onClick}>
     <div className="rc-top"><div className="rc-left">{r.date&&<div className="rc-date">{r.date}</div>}<div className={`rc-hook${r.hook?'':' mt'}`}>{r.hook||"No hook yet..."}</div></div>
-      <div className="rc-right"><span className="badge" style={{background:f.c}}>{f.l}</span><span className="tdot"><i style={{background:t?.c}}/>{t?.l}</span>{isOut&&<span className="tg-star">â­</span>}</div></div>
+      <div className="rc-right"><span className="badge" style={{background:f.c}}>{f.l}</span><span className="tdot"><i style={{background:t?.c}}/>{t?.l}</span>{isOut&&<span className="tg-star">*</span>}</div></div>
     <div style={{display:'flex',justifyContent:'space-between',alignItems:'center'}}>
-      <div className="rc-tags"><span className="tg tg-g">{r.funnel}</span>{r.status==="approved"&&<span className="tg" style={{color:'var(--gn)',background:'rgba(92,184,92,.1)'}}>âœ“</span>}</div>
+      <div className="rc-tags"><span className="tg tg-g">{r.funnel}</span>{r.status==="approved"&&<span className="tg" style={{color:'var(--gn)',background:'rgba(92,184,92,.1)'}}>OK</span>}</div>
       <div className="rc-icons">{r.driveLink&&<a href={r.driveLink} target="_blank" rel="noopener" className="drv" onClick={e=>e.stopPropagation()}><DrvI/></a>}<button className={`rtg${r.recorded?' on':''}`} onClick={e=>{e.stopPropagation();onTR(r.id)}}><RecI on={r.recorded}/></button></div></div>
     {hasP&&<div className="rc-perf">{pl.cardPerf.map(k=><div key={k} style={{textAlign:'center',flex:1}}><div className="rc-pv" style={{color:k==='saves'?'var(--gd)':k==='shares'?'var(--gn)':'var(--tx)'}}>{fmt(r[k])}</div><div className="rc-pl">{pl.perfLabels[k]?.split(' ')[0]||k}</div></div>)}</div>}
   </div>;
 }
 
-// â•â•â• REEL MODAL â•â•â•
+// === REEL MODAL ===
 function RM({reel:r,tracks:tks,fmts,platId:pid,onSave,onClose,onDel,onAppr,onDupe,isAdmin}){
   const[d,sD]=useState({...r});const[cDel,sCDel]=useState(false);const pl=P[pid];
   const u=(k,v)=>sD(p=>({...p,[k]:v}));
@@ -216,14 +216,14 @@ function RM({reel:r,tracks:tks,fmts,platId:pid,onSave,onClose,onDel,onAppr,onDup
       <div className="sec">Performance Analytics</div>
       <div className="fr4">{pl.perfFields.slice(0,4).map(k=><div key={k}><label className="fl">{pl.perfLabels[k]}</label><input className="fi" type="number" step="any" value={d[k]??""}onChange={e=>u(k,e.target.value?+e.target.value:null)}/></div>)}</div>
       <div className="fr4">{pl.perfFields.slice(4).map(k=><div key={k}><label className="fl">{pl.perfLabels[k]}</label><input className="fi" type="number" step="any" value={d[k]??""}onChange={e=>u(k,e.target.value?+e.target.value:null)}/></div>)}</div>
-      {pid==="instagram"&&d.reach>0&&<div style={{fontSize:10,color:'var(--txM)',fontFamily:'var(--mn)'}}>Eng Rate: {(((d.likes||0)+(d.comments||0)+(d.shares||0)+(d.saves||0))/d.reach*100).toFixed(1)}% Â· Save Rate: {((d.saves||0)/d.reach*100).toFixed(2)}%</div>}
+      {pid==="instagram"&&d.reach>0&&<div style={{fontSize:10,color:'var(--txM)',fontFamily:'var(--mn)'}}>Eng Rate: {(((d.likes||0)+(d.comments||0)+(d.shares||0)+(d.saves||0))/d.reach*100).toFixed(1)}% | Save Rate: {((d.saves||0)/d.reach*100).toFixed(2)}%</div>}
       <div style={{fontSize:8,color:'var(--txM)',fontFamily:'var(--mn)',fontStyle:'italic'}}>DMs: log only if directly attributable to this reel</div>
     </div>
-    <div className="mf"><div style={{display:'flex',gap:4}}><button className="btn btn-gn" onClick={()=>onAppr({...d,status:d.status==='approved'?'pending':'approved'})}>âœ“</button><button className="btn btn-g" onClick={()=>onSave(d)}>SAVE</button>{isAdmin&&<button className="btn" onClick={()=>onDupe(d)} title="Duplicate">dup</button>}</div><div style={{display:'flex',gap:4}}>{isAdmin&&<button className="btn btn-rd" onClick={()=>sCDel(true)}>DEL</button>}<button className="btn" onClick={onClose}>x</button></div></div>
+    <div className="mf"><div style={{display:'flex',gap:4}}><button className="btn btn-gn" onClick={()=>onAppr({...d,status:d.status==='approved'?'pending':'approved'})}>OK</button><button className="btn btn-g" onClick={()=>onSave(d)}>SAVE</button>{isAdmin&&<button className="btn" onClick={()=>onDupe(d)} title="Duplicate">dup</button>}</div><div style={{display:'flex',gap:4}}>{isAdmin&&<button className="btn btn-rd" onClick={()=>sCDel(true)}>DEL</button>}<button className="btn" onClick={onClose}>x</button></div></div>
   </div>{cDel&&<div className="cfm" onClick={()=>sCDel(false)}><div className="cfm-b" onClick={e=>e.stopPropagation()}><p>Delete this {pl.il.toLowerCase()}?</p><div style={{display:'flex',gap:5,justifyContent:'center'}}><button className="btn" onClick={()=>sCDel(false)}>Cancel</button><button className="btn btn-rd" onClick={()=>onDel(d.id)}>Delete</button></div></div></div>}</div>;
 }
 
-// â•â•â• MAIN APP â•â•â•
+// === MAIN APP ===
 function MainApp({auth}){
   const isAdmin=auth.role==='admin';
   const[view,setView]=useState("calendar");
@@ -314,7 +314,7 @@ function MainApp({auth}){
   const pPerf=prevWeeks.flatMap(w=>w.reels).filter(r=>r[mainK]!=null);
   const pMain=pPerf.reduce((s,r)=>s+(r[mainK]||0),0);const pSaves=pPerf.reduce((s,r)=>s+(r.saves||0),0);const pShares=pPerf.reduce((s,r)=>s+(r.shares||0),0);
   const cMain=perfR.reduce((s,r)=>s+(r[mainK]||0),0);const cSaves=perfR.reduce((s,r)=>s+(r.saves||0),0);const cShares=perfR.reduce((s,r)=>s+(r.shares||0),0);
-  const Delta=({c,p})=>{const d=pctDt(c,p);if(d==null)return null;return<div className="oi-d" style={{color:d>=0?'var(--gn)':'var(--rd)'}}>{d>=0?'â†‘':'â†“'}{Math.abs(d)}%</div>};
+  const Delta=({c,p})=>{const d=pctDt(c,p);if(d==null)return null;return<div className="oi-d" style={{color:d>=0?'var(--gn)':'var(--rd)'}}>{d>=0?'+':'-'}{Math.abs(d)}%</div>};
 
   function uW(nw){saveData(nw,undefined)}
   function addR(wi){const nw=[...weeks];nw[wi]={...nw[wi],reels:[...nw[wi].reels,nr(plat)]};uW(nw);sEM({wi,ri:nw[wi].reels.length-1})}
@@ -384,9 +384,9 @@ function MainApp({auth}){
         <span className="sep">|</span>
         <div className="tabs"><button className={`tab${plat==='instagram'?' on':''}`} onClick={()=>setPlat('instagram')}>INSTA</button><button className={`tab${plat==='youtube'?' on':''}`} onClick={()=>setPlat('youtube')}>YT</button></div>
       </div>
-      <div className="mo"><button onClick={prevMo}>â—‚</button><span>{MN[mo]} {yr}</span><button onClick={nextMo}>â–¸</button></div>
+      <div className="mo"><button onClick={prevMo}><</button><span>{MN[mo]} {yr}</span><button onClick={nextMo}>></button></div>
       <div className="top-r">
-        {isAdmin&&<button className="btn" onClick={()=>sSO(true)}>âš™</button>}
+        {isAdmin&&<button className="btn" onClick={()=>sSO(true)}>SETTINGS</button>}
         {isAdmin&&view==='calendar'&&<button className="btn" onClick={apprAll}>APPROVE ALL</button>}
       </div>
     </div>
@@ -397,7 +397,7 @@ function MainApp({auth}){
       <span><b style={{color:allR.filter(r=>r.status==='approved').length?'var(--gn)':'var(--txM)'}}>{allR.filter(r=>r.status==='approved').length}</b> <span style={{color:'var(--txM)'}}>approved</span></span>
       <span><b style={{color:allR.filter(r=>r.status==='pending').length?'var(--gd)':'var(--txM)'}}>{allR.filter(r=>r.status==='pending').length}</b> <span style={{color:'var(--txM)'}}>pending</span></span>
       <span><b style={{color:allR.filter(r=>r.recorded).length?'var(--pr)':'var(--txM)'}}>{allR.filter(r=>r.recorded).length}</b> <span style={{color:'var(--txM)'}}>recorded</span></span>
-      {outliers.length>0&&<><span className="sep">|</span><span><b style={{color:'var(--gd)'}}>{outliers.length}</b> <span style={{color:'var(--gd)'}}>â­ outliers</span></span></>}
+      {outliers.length>0&&<><span className="sep">|</span><span><b style={{color:'var(--gd)'}}>{outliers.length}</b> <span style={{color:'var(--gd)'}}>* outliers</span></span></>}
     </div>
     <div style={{padding:'14px 18px 50px'}}>
       {weeks.map((w,wi)=><div key={w.id} className="wk">
@@ -416,19 +416,19 @@ function MainApp({auth}){
           <div className="oi"><div className="oi-v" style={{color:'var(--bl)'}}>{fmt(cMain)}</div><div className="oi-l">Total {mainK}</div><Delta c={cMain} p={pMain}/></div>
           <div className="oi"><div className="oi-v" style={{color:'var(--gd)'}}>{cSaves}</div><div className="oi-l">Saves</div><Delta c={cSaves} p={pSaves}/></div>
           <div className="oi"><div className="oi-v" style={{color:'var(--gn)'}}>{cShares}</div><div className="oi-l">Shares</div><Delta c={cShares} p={pShares}/></div>
-          <div className="oi"><div className="oi-v" style={{color:'var(--gd)'}}>{outliers.length}</div><div className="oi-l">â­ Outliers</div></div>
+          <div className="oi"><div className="oi-v" style={{color:'var(--gd)'}}>{outliers.length}</div><div className="oi-l">* Outliers</div></div>
           {plat==="instagram"&&<div className="oi"><div className="oi-v">{perfR.length?Math.round(perfR.reduce((s,r)=>s+(r.avgWatch||0),0)/perfR.length):0}s</div><div className="oi-l">Avg Watch</div></div>}
           {plat==="youtube"&&<div className="oi"><div className="oi-v">{perfR.length?(perfR.reduce((s,r)=>s+(r.ctr||0),0)/perfR.length).toFixed(1):0}%</div><div className="oi-l">Avg CTR</div></div>}
         </div>
       </div>
-      {outliers.length>0&&<div className="card"><div className="card-t">â­ Outliers - Double Down</div>{outliers.map(r=><div key={r.id} className="out-card"><div className="out-hook">{r.hook}</div><div className="out-meta">{tks.find(t=>t.id===r.track)?.l} Â· {fmts.find(f=>f.id===r.format)?.l} Â· {r.funnel} Â· {fmt(r[mainK])} {mainK} Â· {r.saves} saves Â· {r.shares} shares</div><div className="out-why">{outWhy(r)}</div></div>)}</div>}
+      {outliers.length>0&&<div className="card"><div className="card-t">* Outliers - Double Down</div>{outliers.map(r=><div key={r.id} className="out-card"><div className="out-hook">{r.hook}</div><div className="out-meta">{tks.find(t=>t.id===r.track)?.l} | {fmts.find(f=>f.id===r.format)?.l} | {r.funnel} | {fmt(r[mainK])} {mainK} | {r.saves} saves | {r.shares} shares</div><div className="out-why">{outWhy(r)}</div></div>)}</div>}
       <div className="card"><div className="card-t">What's Working - By Saves</div>
         <table className="tbl"><thead><tr><th>Hook</th><th>Track</th><th>Format</th><th>Stage</th><th className="r">{mainK.charAt(0).toUpperCase()+mainK.slice(1)}</th><th className="r">Shares</th><th className="r" style={{color:'var(--gd)'}}>Saves</th></tr></thead>
         <tbody>{topSaves.map(r=>{const t=tks.find(x=>x.id===r.track);const f=fmts.find(x=>x.id===r.format);return<tr key={r.id}><td className="hk">{r.hook}</td><td><span style={{fontSize:7,color:t?.c,fontFamily:'var(--mn)'}}>{t?.l}</span></td><td><span style={{fontSize:7,color:f?.c,fontFamily:'var(--mn)'}}>{f?.l}</span></td><td className="r">{r.funnel}</td><td className="r">{fmt(r[mainK])}</td><td className="r">{r.shares}</td><td className="r hi">{r.saves}</td></tr>})}</tbody></table>
       </div>
       <div className="row2">
-        <div className="card"><div className="card-t">Track â†’ Saves</div>{trkP.filter(t=>t.ct>0).map(t=><div key={t.id} className="tr-row"><span className="tr-dot" style={{background:t.c}}/><span className="tr-nm">{t.l}</span><span className="tr-v">{t.totalSaves}</span><div className="tr-bar"><div className="tr-bf" style={{width:`${t.totalSaves/maxTS*100}%`,background:t.c}}/></div><span className="tr-ct">{t.ct} reels</span></div>)}</div>
-        <div className="card"><div className="card-t">Format â†’ Avg Saves</div><div className="bars">{fmtP.map(f=><div key={f.id} className="bar-c"><div className="bar-v" style={{color:f.c}}>{f.ct?f.avgSaves:'-'}</div><div className="bar-w"><div className="bar-f" style={{height:`${f.ct?Math.max(f.avgSaves/maxFS*100,3):3}%`,background:f.c,opacity:f.ct?1:.15}}/></div><div className="bar-l">{f.l}</div></div>)}</div></div>
+        <div className="card"><div className="card-t">Track -> Saves</div>{trkP.filter(t=>t.ct>0).map(t=><div key={t.id} className="tr-row"><span className="tr-dot" style={{background:t.c}}/><span className="tr-nm">{t.l}</span><span className="tr-v">{t.totalSaves}</span><div className="tr-bar"><div className="tr-bf" style={{width:`${t.totalSaves/maxTS*100}%`,background:t.c}}/></div><span className="tr-ct">{t.ct} reels</span></div>)}</div>
+        <div className="card"><div className="card-t">Format -> Avg Saves</div><div className="bars">{fmtP.map(f=><div key={f.id} className="bar-c"><div className="bar-v" style={{color:f.c}}>{f.ct?f.avgSaves:'-'}</div><div className="bar-w"><div className="bar-f" style={{height:`${f.ct?Math.max(f.avgSaves/maxFS*100,3):3}%`,background:f.c,opacity:f.ct?1:.15}}/></div><div className="bar-l">{f.l}</div></div>)}</div></div>
       </div>
       <div className="card"><div className="card-t">Funnel Stage</div>
         <table className="tbl"><thead><tr><th>Stage</th><th className="r">Reels</th><th className="r">Avg {mainK}</th><th className="r" style={{color:'var(--gd)'}}>Avg Saves</th></tr></thead>
@@ -473,7 +473,7 @@ function MainApp({auth}){
   </div>;
 }
 
-// â•â•â• ROOT â•â•â•
+// === ROOT ===
 function App(){
   const[auth,setAuth]=useState(null);
   const[checking,setChecking]=useState(true);
@@ -490,4 +490,5 @@ ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
 </script>
 </body>
 </html>
+
 
