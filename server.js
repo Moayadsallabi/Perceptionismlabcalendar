@@ -311,4 +311,3 @@ initDB().then(() => {
     console.log('Set ADMIN_PASS env var to change it\n');
   });
 });
-
