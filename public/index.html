@@ -318,7 +318,7 @@ function MainApp({auth}){
 
   function uW(nw){saveData(nw,undefined)}
   function addR(wi){const nw=[...weeks];nw[wi]={...nw[wi],reels:[...nw[wi].reels,nr(plat)]};uW(nw);sEM({wi,ri:nw[wi].reels.length-1})}
-  function saveR(upd){if(!eM)return;const nw=[...weeks];nw[eM.wi]={...nw[eM.wi],reels:[...nw[eM.wi].reels]};nw[eM.wi].reels[eM.ri]=upd;uW(nw);tst("Saved");sEM(null)}
+  function saveR(upd){if(!eM)return;const old=weeks[eM.wi]?.reels[eM.ri];const nw=[...weeks];nw[eM.wi]={...nw[eM.wi],reels:[...nw[eM.wi].reels]};nw[eM.wi].reels[eM.ri]=upd;uW(nw);if(upd.driveLink&&upd.driveLink!==old?.driveLink){post('/api/slack-notify',{text:`Reel ready - W${eM.wi+1}: ${upd.hook||'No hook'} | Drive: ${upd.driveLink}`}).catch(()=>{})}tst("Saved");sEM(null)}
   function apprR(u){saveR(u)}
   function delR(rid){if(!eM)return;const nw=[...weeks];nw[eM.wi]={...nw[eM.wi],reels:nw[eM.wi].reels.filter(r=>r.id!==rid)};uW(nw);sEM(null);tst("Deleted")}
   function dupeReelFn(d){if(!eM)return;const dup=dupeR(d);const nw=[...weeks];const rs=[...nw[eM.wi].reels];rs.splice(eM.ri+1,0,dup);nw[eM.wi]={...nw[eM.wi],reels:rs};uW(nw);sEM({wi:eM.wi,ri:eM.ri+1});tst("Duplicated")}
