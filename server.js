@@ -17,7 +17,7 @@ const ADMIN_PASS = process.env.ADMIN_PASS || 'perceptionism2024';
 
 let db;
 
-// ═══ DATABASE SETUP ═══
+// === DATABASE SETUP ===
 async function initDB() {
   const SQL = await initSqlJs();
   if (fs.existsSync(DB_PATH)) {
@@ -85,7 +85,7 @@ function saveDB() {
   fs.writeFileSync(DB_PATH, buffer);
 }
 
-// ═══ AUTH MIDDLEWARE ═══
+// === AUTH MIDDLEWARE ===
 function adminAuth(req, res, next) {
   const token = req.cookies?.admin_token || req.headers['x-admin-token'];
   if (!token) return res.status(401).json({ error: 'Not authenticated' });
@@ -134,7 +134,7 @@ function anyAuth(req, res, next) {
   return res.status(401).json({ error: 'Not authenticated' });
 }
 
-// ═══ AUTH ROUTES ═══
+// === AUTH ROUTES ===
 app.post('/api/admin/login', (req, res) => {
   const { password } = req.body;
   const stored = db.exec("SELECT value FROM settings WHERE key='admin_hash'");
@@ -176,7 +176,7 @@ app.get('/api/me', anyAuth, (req, res) => {
   res.json({ role: 'client', clientId: req.clientId, clientName: req.clientName, clientColor: req.clientColor });
 });
 
-// ═══ SETTINGS (admin only) ═══
+// === SETTINGS (admin only) ===
 app.get('/api/settings', adminAuth, (req, res) => {
   const rows = db.exec("SELECT key, value FROM settings WHERE key IN ('tracks', 'slk', 'fmts_instagram', 'fmts_youtube')");
   const settings = {};
@@ -204,7 +204,7 @@ app.get('/api/tracks', anyAuth, (req, res) => {
   res.json(result);
 });
 
-// ═══ CLIENTS (admin only) ═══
+// === CLIENTS (admin only) ===
 app.get('/api/clients', adminAuth, (req, res) => {
   const rows = db.exec("SELECT id, name, color, token FROM clients ORDER BY created_at");
   if (!rows.length) return res.json([]);
@@ -239,7 +239,7 @@ app.post('/api/clients/:id/regenerate-token', adminAuth, (req, res) => {
   res.json({ token });
 });
 
-// ═══ MONTH DATA ═══
+// === MONTH DATA ===
 app.get('/api/data/:clientId/:platform/:monthKey', anyAuth, (req, res) => {
   const { clientId, platform, monthKey } = req.params;
   // Client can only access their own data
@@ -276,7 +276,26 @@ app.put('/api/data/:clientId/:platform/:monthKey', anyAuth, (req, res) => {
   res.json({ ok: true });
 });
 
-// ═══ BULK EXPORT/IMPORT (admin) ═══
+
+// === SLACK PROXY ===
+app.post('/api/slack-notify', anyAuth, async (req, res) => {
+  const slkRow = db.exec("SELECT value FROM settings WHERE key='slk'");
+  const slkUrl = slkRow.length ? slkRow[0].values[0][0] : '';
+  if (!slkUrl) return res.json({ ok: false, reason: 'No webhook configured' });
+  const { text } = req.body;
+  try {
+    const resp = await fetch(slkUrl, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text: text || 'Notification from Perceptionism Lab' })
+    });
+    res.json({ ok: resp.ok });
+  } catch (e) {
+    res.json({ ok: false, reason: e.message });
+  }
+});
+
+// === BULK EXPORT/IMPORT (admin) ===
 app.get('/api/export', adminAuth, (req, res) => {
   const clients = db.exec("SELECT id, name, color, token FROM clients");
   const settings = db.exec("SELECT key, value FROM settings WHERE key IN ('tracks', 'slk')");
@@ -284,7 +303,7 @@ app.get('/api/export', adminAuth, (req, res) => {
   res.json({ clients: clients[0]?.values || [], settings: settings[0]?.values || [], data: data[0]?.values || [] });
 });
 
-// ═══ SPA ROUTING ═══
+// === SPA ROUTING ===
 app.get('/c/:clientSlug', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
@@ -295,7 +314,7 @@ app.get('*', (req, res) => {
   }
 });
 
-// ═══ START ═══
+// === START ===
 initDB().then(() => {
   app.listen(PORT, () => {
     console.log(`Perceptionism Lab running on http://localhost:${PORT}`);
