@@ -246,6 +246,8 @@ function MainApp({auth}){
   const[slk,setSlk]=useState('');
   const[loading,setLoading]=useState(true);
   const[fmtEdit,setFmtEdit]=useState(null);
+  const[gEdit,sGE]=useState(false);
+  const[eGoals,setEGoals]=useState([]);
 
   function tst(m){sT(m);setTimeout(()=>sT(""),2e3)}
   const pl=P[plat];const mainK=pl.mainK;const mK=mkk(yr,mo);
@@ -286,12 +288,12 @@ function MainApp({auth}){
       try{
         const d=await get(`/api/data/${aC}/${plat}/${mK}`);
         setWeeks(d.weeks||dw(plat));
-        setGoals(d.goals||DG(plat));
+        setGoals(d.goals&&d.goals.length?d.goals:DG(plat));
         const p=await get(`/api/data/${aC}/${plat}/${pMK}`);
         setPrevWeeks(p.weeks||[]);
       }catch(e){console.error(e)}
     })();
-    sEM(null);
+    sEM(null);sGE(false);
   },[aC,plat,mK]);
 
   // Save helper
@@ -353,8 +355,19 @@ function MainApp({auth}){
 
   function renderGoals(){
     const title=MN[mo].substring(0,3).toUpperCase()+" GOALS";
+    if(gEdit&&isAdmin)return<div className="goals-panel">
+      <div className="goals-hdr"><span className="goals-title">{title}</span><div style={{display:'flex',gap:4}}><button className="goals-edit" onClick={()=>{saveData(undefined,eGoals);sGE(false);tst("Goals saved")}}>SAVE</button><button className="goals-edit" onClick={()=>{setEGoals(goals);sGE(false)}}>CANCEL</button></div></div>
+      {eGoals.map((g,i)=><div key={g.id} className="goal-row" style={{gap:6}}>
+        <input style={{flex:'0 0 120px',background:'var(--bg)',border:'1px solid var(--bd)',borderRadius:3,padding:'4px 6px',color:'var(--tx)',fontSize:10}} value={g.label} onChange={e=>{const n=[...eGoals];n[i]={...n[i],label:e.target.value};setEGoals(n)}}/>
+        <label style={{fontSize:7,color:'var(--txM)',fontFamily:'var(--mn)',display:'flex',alignItems:'center',gap:3,cursor:'pointer',whiteSpace:'nowrap'}}><input type="checkbox" checked={g.auto!==false} onChange={e=>{const n=[...eGoals];n[i]={...n[i],auto:e.target.checked};setEGoals(n)}} style={{width:10,height:10}}/>AUTO</label>
+        <span style={{fontSize:8,color:'var(--txM)',fontFamily:'var(--mn)'}}>TARGET:</span>
+        <input style={{width:65,background:'var(--bg)',border:'1px solid var(--bd)',borderRadius:3,padding:'4px 6px',color:'var(--gd)',fontSize:11,fontFamily:'var(--mn)',fontWeight:700,textAlign:'right'}} type="number" value={g.target} onChange={e=>{const n=[...eGoals];n[i]={...n[i],target:+e.target.value};setEGoals(n)}}/>
+        <button className="trk-rm" onClick={()=>setEGoals(eGoals.filter((_,j)=>j!==i))}>x</button>
+      </div>)}
+      <button className="trk-add" onClick={()=>setEGoals([...eGoals,{id:'g'+uid(),label:"New Goal",target:100,icon:"star",auto:false,manual:0}])}>+ ADD GOAL</button>
+    </div>;
     return<div className="goals-panel">
-      <div className="goals-hdr"><span className="goals-title"><i/>{title}</span></div>
+      <div className="goals-hdr"><span className="goals-title"><i/>{title}</span>{isAdmin&&<button className="goals-edit" onClick={()=>{setEGoals([...goals]);sGE(true)}}>EDIT</button>}</div>
       {goals.map(g=>{const cur=goalCur(g);const pct=g.target?Math.min(cur/g.target*100,100):0;
         return<div key={g.id} className="goal-row">
           <span className="goal-label">{GI[g.icon]||GI.star}{g.label}</span>
@@ -490,4 +503,3 @@ ReactDOM.createRoot(document.getElementById("app")).render(<App/>);
 </script>
 </body>
 </html>
-
