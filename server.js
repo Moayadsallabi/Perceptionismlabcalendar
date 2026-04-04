@@ -11,7 +11,7 @@ app.use(express.json({ limit: '10mb' }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-const DB_PATH = path.join(__dirname, 'data.db');
+const DB_PATH = process.env.DB_PATH || path.join(__dirname, 'data.db');
 const PORT = process.env.PORT || 3000;
 const ADMIN_PASS = process.env.ADMIN_PASS || 'perceptionism2024';
 
@@ -269,8 +269,16 @@ app.put('/api/data/:clientId/:platform/:monthKey', anyAuth, (req, res) => {
       db.run(`UPDATE month_data SET ${sets.join(', ')} WHERE client_id = ? AND platform = ? AND month_key = ?`, vals);
     }
   } else {
+    const defGoals = [
+      {id:"g1",label:"Monthly Plays",target:50000,icon:"eye",auto:true},
+      {id:"g2",label:"Total Saves",target:500,icon:"save",auto:true},
+      {id:"g3",label:"Published This Month",target:28,icon:"upload",auto:true},
+      {id:"g4",label:"Monthly DMs",target:100,icon:"msg",auto:false,manual:0},
+      {id:"g5",label:"Engagement Rate",target:7,icon:"pct",auto:true},
+      {id:"g6",label:"Viral Reels (100K+)",target:3,icon:"star",auto:true}
+    ];
     db.run("INSERT INTO month_data (client_id, platform, month_key, weeks, goals) VALUES (?, ?, ?, ?, ?)",
-      [clientId, platform, monthKey, JSON.stringify(weeks || []), JSON.stringify(goals || [])]);
+      [clientId, platform, monthKey, JSON.stringify(weeks || []), JSON.stringify(goals || defGoals)]);
   }
   saveDB();
   res.json({ ok: true });
