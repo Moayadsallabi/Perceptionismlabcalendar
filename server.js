@@ -19,11 +19,24 @@ let db;
 
 // === DATABASE SETUP ===
 async function initDB() {
+  // Ensure the directory for DB_PATH exists
+  const dbDir = path.dirname(DB_PATH);
+  if (!fs.existsSync(dbDir)) {
+    fs.mkdirSync(dbDir, { recursive: true });
+    console.log('Created directory:', dbDir);
+  }
+
+  console.log('DB_PATH:', DB_PATH);
+  console.log('DB exists:', fs.existsSync(DB_PATH));
+  console.log('DB dir contents:', fs.readdirSync(dbDir));
+
   const SQL = await initSqlJs();
   if (fs.existsSync(DB_PATH)) {
+    console.log('Loading existing database');
     const buf = fs.readFileSync(DB_PATH);
     db = new SQL.Database(buf);
   } else {
+    console.log('Creating new database');
     db = new SQL.Database();
   }
 
